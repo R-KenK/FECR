@@ -1,14 +1,24 @@
-# Import datasets (epg and treatment data) --------------------------------
+# Import required functions --------------------------------
 source("R/Misc_tools.R")
 source("R/FECR.R")
 
+# Import datasets (epg and treatment datasets from .csv, exported into the FECR package) --------------------------------
 load(file = "data/EPG.rda")
 load(file = "data/Treatment.rda")
 
+
+# Data manipulations and subsetting ---------------------------------------
+
+# Keep only oes and trich
+EPG<- EPG[EPG$species %in% c("oes","trich"),]
+EPG$species<- droplevels(EPG$species)
+
+# Manage dates correctly
 EPG$date<- as.Date(EPG$date,origin="1970-01-01")
 EPG$year<- as.numeric(substr(EPG$date,1,4))
 Treatment$Trtdate<- as.Date(Treatment$Trtdate,origin="1970-01-01")
 
+# Identify and subset epg data with treatment for the specific season
 there.is.date<- sapply(seq_len(nrow(EPG)),
                        function(i) {
                          year.epg<- EPG$year[i];season.epg<- as.character(EPG$season[i]);
@@ -23,6 +33,7 @@ there.is.date<- sapply(seq_len(nrow(EPG)),
 
 EPG<- EPG[there.is.date,]
 
+# Match epg data with the relevant individual or average treatment date
 EPG$Trtdate<- as.Date(
   sapply(seq_len(nrow(EPG)),
          function(i) {
@@ -38,9 +49,67 @@ EPG$Trtdate<- as.Date(
   origin="1970-01-01"
 )
 
+# Keep only epg data when the collection date is in the relevant time window with respect to treatment date
 EPG<- EPG[EPG$date>=(EPG$Trtdate-3*7) & EPG$date<=(EPG$Trtdate+3*7),]   # confirm timing for inclusion
 
+# Determine before and after periods based on matched treatment date (revamping the previous sort-of-manual period attribution)
 EPG$period<- ifelse(EPG$date<EPG$Trtdate,"before","after")   # what about on the day => "before" to confirm.
 
+# Revampingt seasonchron to be ordered alphabetically
+EPG$seasonchron<- paste0(EPG$year,"-",EPG$season)
 
+# Subsetting columns of interest
+FECR.df<- EPG[,c("date","season","seasonchron","sample","id","tvnt","Trtdate","period","species","epg")]
 
+# Subset epg data with only samples from individual that were sampled before and after treatment
+FECR.df<-  keep_with_before.after(FECR.df) # NOT SURE ABOUT INCLUDING THIS LINE OR NOT: should we remove individuals without data in both before and after, when considering mean values?
+
+FECR.group<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg)),by=.(seasonchron,tvnt,season,period,species)])
+
+FECR.ind<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg)),by=.(seasonchron,tvnt,id,season,period,species)][!(tvnt=="treated"&period=="before"&epg==0)][!(tvnt=="control"&period=="after"&epg==0)])
+FECR.ind<-  keep_with_before.after(FECR.ind)
+
+FECR.comp<- rbind_lapply(unique(FECR.df$species),
+                         function(sp){
+                           FECR.group<- data.table::data.table(FECR.group);FECR.ind<- data.table::data.table(FECR.ind);
+                           rbind_lapply(unique(FECR.df$seasonchron),
+                                        function(s){
+                                          C1.mean<- FECR.group[seasonchron==s & tvnt=="control" & period=="before" & species==sp]$epg
+                                          C2.mean<- FECR.group[seasonchron==s & tvnt=="control" & period=="after" & species==sp]$epg
+                                          T1.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="before" & species==sp]$epg
+                                          T2.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="after" & species==sp]$epg
+                                          
+                                          C1.ind.list<- C2.ind.list<- rand.ind.list(FECR.ind,s = s,group = "control",per = "before",sp = sp)
+                                          T1.ind.list<- T2.ind.list<- rand.ind.list(FECR.ind,s = s,group = "treated",per = "before",sp = sp)
+                                          
+                                          C1.sub<- FECR.ind[seasonchron==s&period == "before"&species==sp][id %in% C1.ind.list]$epg
+                                          C2.sub<- FECR.ind[seasonchron==s&period == "after"&species==sp][id %in% C1.ind.list]$epg
+                                          T1.sub<- FECR.ind[seasonchron==s&period == "before"&species==sp][id %in% T1.ind.list]$epg
+                                          T2.sub<- FECR.ind[seasonchron==s&period == "after"&species==sp][id %in% T1.ind.list]$epg
+                                          
+                                          C1<- FECR.ind[seasonchron==s&tvnt=="control"&period == "before"&species==sp]$epg
+                                          C2<- FECR.ind[seasonchron==s&tvnt=="control"&period == "after"&species==sp]$epg
+                                          T1<- FECR.ind[seasonchron==s&tvnt=="treated"&period == "before"&species==sp]$epg
+                                          T2<- FECR.ind[seasonchron==s&tvnt=="treated"&period == "after"&species==sp]$epg
+                                          
+                                          data.frame(species=sp,seasonchron=s,
+                                                     FECR1=FECR(T1 = T1.mean,T2 = T2.mean,method = "Kochapakdee"),
+                                                     FECR2=FECR(T1 = T1.mean,T2 = T2.mean,C1 = C1.mean,C2 = C2.mean,method = "Dash"),
+                                                     FECR3=FECR(T2 = T2.mean,C2 = C2.mean,method = "Coles"),
+                                                     FECR4=FECR(T1 = T1.sub,T2 = T2.sub,method = "Cabaret1"),
+                                                     FECR5=FECR(T1 = T1.sub,T2 = T2.sub,C1 = C1.sub,C2 = C2.sub,method = "Cabaret2"),
+                                                     FECR6=FECR(T1 = T1,T2 = T2,C1 = C1,C2 = C2,method = "MacIntosh")
+                                          )
+                                        }
+                           )
+                         }
+)
+FECR.comp
+
+FECR.long<- reshape2::melt(FECR.comp,id.vars = c("species","seasonchron"),variable.name = "method",value.name = "FECR")
+
+library(ggplot2)
+ggplot(FECR.long,aes(method,FECR,fill=method))+
+  facet_grid(seasonchron~species)+
+  geom_hline(yintercept = 0)+geom_hline(yintercept = 100,lty="dashed",colour="grey50")+
+  geom_bar(stat = "identity")+theme_bw()

@@ -2,4 +2,8 @@
 
 export(FECR)
 export(closest.date)
+export(keep_with_before.after)
+export(rand.ind.list)
 export(rbind_lapply)
+importFrom(data.table,data.table)
+importFrom(data.table,is.data.table)

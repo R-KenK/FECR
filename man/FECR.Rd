@@ -10,7 +10,7 @@ FECR(
   T2 = NULL,
   C1 = NULL,
   C2 = NULL,
-  method = c("Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2")
+  method = c("Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2", "MacIntosh")
 )
 }
 \arguments{
@@ -29,6 +29,7 @@ FECR(
  \item{"Coles"}{the ratio of the treated and control post-treatment epg arithmetic means}
  \item{"Cabaret1"}{the mean ratio of individual pre- and post-treatment epg of the treated group}
  \item{"Cabaret2"}{the mean ratio of pre- and post-treatment epg of the treated group, correcting for the individual epg in the control group.}
+ \item{"MacIntosh"}{Similar to Cabaret2, but update: now run for all pairs of Ts and Cs, to not require Ts and Cs to have the same length.}
 }}
 }
 \value{
@@ -54,4 +55,12 @@ FECR(T2 = T2.mean,C2 = C2.mean,method = "Coles")
 FECR(T2 = T2,C2 = C2,method = "Coles")
 FECR(T1,T2,method = "Cabaret1")
 FECR(T1,T2,C1,C2,method = "Cabaret2")
+FECR(T1,T2,C1,C2,method = "MacIntosh")
+
+T1<- rpois(60,100);T1.mean<- mean(T1)
+T2<- rpois(60,10);T2.mean<- mean(T2)
+C1<- rpois(50,100);C1.mean<- mean(C1)
+C2<- rpois(50,90);C2.mean<- mean(C2)
+
+FECR(T1,T2,C1,C2,method = "MacIntosh")
 }
