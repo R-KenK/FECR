@@ -42,23 +42,23 @@ EPG$Trtdate<- as.Date(
 )
 
 # Keep only epg data when the collection date is in the relevant time window with respect to treatment date
-EPG<- EPG[EPG$date>=(EPG$Trtdate-3*7) & EPG$date<=(EPG$Trtdate+3*7),]   # confirm timing for inclusion
+EPG.all<- EPG
+EPG.3w<- EPG[EPG$date>=(EPG$Trtdate-3*7) & EPG$date<=(EPG$Trtdate+3*7),]   # confirm timing for inclusion
 
 # Determine before and after periods based on matched treatment date (revamping the previous sort-of-manual period attribution)
-EPG$period<- ifelse(EPG$date<EPG$Trtdate,"before","after")   # what about on the day => "before" to confirm.
-
-# Revampingt seasonchron to be ordered alphabetically
-EPG$seasonchron<- paste0(EPG$year,"-",EPG$season)
+EPG.3w$period<- ifelse(EPG.3w$date<EPG.3w$Trtdate,"before","after")   # what about on the day => "before" to confirm.
 
 # Subsetting columns of interest
-FECR.df<- EPG[,c("date","season","seasonchron","sample","id","tvnt","Trtdate","period","species","epg")]
+FECR.df<- EPG.3w[,c("date","season","seasonchron","sample","id","tvnt","Trtdate","period","species","epg")]
 
 # Subset epg data with only samples from individual that were sampled before and after treatment
 FECR.df<-  keep_with_before.after(FECR.df) # NOT SURE ABOUT INCLUDING THIS LINE OR NOT: should we remove individuals without data in both before and after, when considering mean values?
 
-FECR.group<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg)),by=.(seasonchron,tvnt,season,period,species)][order(seasonchron)])
+# Calculate mean (and sd) epg values of the different C1,C2,T1,T2 of each season
+FECR.group<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg),sd.epg=sd(epg)),by=.(seasonchron,tvnt,season,period,species)][order(seasonchron)])
 
-FECR.ind<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg)),by=.(seasonchron,tvnt,id,season,period,species)][!(tvnt=="treated"&period=="before"&epg==0)][!(tvnt=="control"&period=="after"&epg==0)])
+# Same, but at the individual level
+FECR.ind<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg),sd.epg=sd(epg)),by=.(seasonchron,tvnt,id,season,period,species)][!(tvnt=="treated"&period=="before"&epg==0)][!(tvnt=="control"&period=="after"&epg==0)])
 FECR.ind<-  keep_with_before.after(FECR.ind)
 
 FECR.comp<- rbind_lapply(unique(FECR.df$species),
@@ -98,12 +98,80 @@ FECR.comp<- rbind_lapply(unique(FECR.df$species),
                            )
                          }
 )
+# Display the table of FECR values
 FECR.comp
 
-FECR.long<- reshape2::melt(FECR.comp,id.vars = c("species","seasonchron"),variable.name = "method",value.name = "FECR")
 
 library(ggplot2)
+# raw plotting of the data
+EPG.all$treatment<- factor(EPG.all$treatment,levels = c("before","after"),ordered = TRUE)
+ggplot(EPG.all,aes(treatment,epg,colour=tvnt))+
+  facet_wrap(.~seasonchron+species+tvnt,ncol=4,scales = "free_y")+
+  geom_jitter(alpha=0.3)+geom_boxplot(alpha=0.75)+
+  theme_bw()
+
+# Effect of including only +/- 3 weeks or raw data
+EPG.3w$treatment<- factor(EPG.3w$treatment,levels = c("before","after"),ordered = TRUE)
+ggplot(EPG.3w,aes(treatment,epg,colour=tvnt))+
+  facet_wrap(.~seasonchron+species+tvnt,ncol=4,scales = "free_y")+
+  geom_jitter(alpha=0.3)+geom_boxplot(alpha=0.75)+
+  theme_bw()
+
+# Group epgs
+FECR.group$period<- factor(FECR.group$period,levels = c("before","after"),ordered = TRUE)
+ggplot(FECR.group[FECR.group$seasonchron!="2014-2.winter",],aes(period,epg,fill=period))+
+  facet_wrap(seasonchron~species+tvnt,ncol=4,scales = "free_y")+
+  geom_hline(yintercept = 0)+
+  geom_errorbar(aes(ymin=epg,ymax=epg+sd.epg),width=0.25)+
+  geom_bar(stat = "identity")+
+  theme_bw()
+
+# individual epgs (note that no notion of intra-individual variation appears within C1,C2,T1,T2)
+FECR.ind$period<- factor(FECR.ind$period,levels = c("before","after"),ordered = TRUE)
+ggplot(FECR.ind[FECR.ind$seasonchron!="2014-2.winter",],aes(period,epg,colour=period,group=id))+
+  facet_wrap(seasonchron~species+tvnt,ncol=4,scales = "free_y")+
+  geom_hline(yintercept = 0)+
+  geom_line(alpha=0.5)+
+  geom_point()+
+  theme_bw()
+
+# FECRs plots
+FECR.long<- reshape2::melt(FECR.comp,id.vars = c("species","seasonchron"),variable.name = "method",value.name = "FECR")
 ggplot(FECR.long,aes(method,FECR,fill=method))+
-  facet_grid(seasonchron~species)+
+  facet_wrap(seasonchron~species,ncol=2,scales = "free_y")+
   geom_hline(yintercept = 0)+geom_hline(yintercept = 100,lty="dashed",colour="grey50")+
-  geom_bar(stat = "identity")+theme_bw()
+  geom_bar(stat = "identity")+
+  theme_bw()
+
+# quick attempt at having well-fitted models, with lowest AIC by tinkering roughly...
+library(glmmTMB)
+FECR.oes.glmm<- glmmTMB(round(epg)~period+period:tvnt+seasonchron:period+(1|id),
+                        ziformula = ~period+period:tvnt+seasonchron,
+                        dispformula = ~1,
+                        data = FECR.df[FECR.df$species=="oes"&FECR.df$seasonchron!="2014-2.winter",],family = "nbinom2")
+# model fit looks ok, and this combination of fixed/random/zi/disp effects yielded the lowest AICs
+plot(DHARMa::simulateResiduals(FECR.oes.glmm))
+summary(FECR.oes.glmm)
+FECR.oes.null<- glmmTMB(round(epg)~1+(1|id),
+                        data = FECR.df[FECR.df$species=="oes"&FECR.df$seasonchron!="2014-2.winter",],family = "nbinom2")
+
+# this would have been interesting...
+summary(FECR.oes.null)
+MuMIn::r.squaredGLMM(FECR.oes.glmm,FECR.oes.null) # ... but this is unfortunately not available :(
+
+FECR.trich.glmm<- glmmTMB(round(epg)~period+period:tvnt+seasonchron:period+(1|id),
+                          ziformula = ~period+period:tvnt+seasonchron,
+                          dispformula = ~1,
+                          FECR.df[FECR.df$species=="trich"&FECR.df$seasonchron!="2014-2.winter",],family = "nbinom2")
+# model fit looks ok, and this combination of fixed/random/zi/disp effects yielded the lowest AICs
+plot(DHARMa::simulateResiduals(FECR.trich.glmm))
+summary(FECR.trich.glmm)
+FECR.trich.null<- glmmTMB(round(epg)~1+(1|id),
+                          FECR.df[FECR.df$species=="trich"&FECR.df$seasonchron!="2014-2.winter",],family = "nbinom2")
+# this would have been interesting...
+summary(FECR.trich.null)
+MuMIn::r.squaredGLMM(FECR.trich.glmm,FECR.trich.null) # ... but this is unfortunately not available :(
+
+# but for which the across season variability impact results (and model predictions) heavily (careful, wrongly ordered before and after...)
+plot(ggeffects::ggpredict(FECR.oes.glmm,c("tvnt","period","seasonchron")))
+plot(ggeffects::ggpredict(FECR.trich.glmm,c("tvnt","period","seasonchron")))
