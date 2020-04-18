@@ -5,7 +5,7 @@
 \alias{Treatment}
 \title{Data on individual treatment}
 \format{
-An object of class \code{data.frame} with 320 rows and 10 columns.
+An object of class \code{data.frame} with 258 rows and 7 columns.
 }
 \usage{
 Treatment

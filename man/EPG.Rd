@@ -5,7 +5,7 @@
 \alias{EPG}
 \title{Data on individual fecal samples and their EPG}
 \format{
-An object of class \code{data.frame} with 3864 rows and 30 columns.
+An object of class \code{data.frame} with 1932 rows and 31 columns.
 }
 \usage{
 EPG

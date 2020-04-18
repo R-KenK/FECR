@@ -6,42 +6,34 @@ source("R/FECR.R")
 load(file = "data/EPG.rda")
 load(file = "data/Treatment.rda")
 
-
-# Data manipulations and subsetting ---------------------------------------
-
 # Keep only oes and trich
 EPG<- EPG[EPG$species %in% c("oes","trich"),]
 EPG$species<- droplevels(EPG$species)
 
-# Manage dates correctly
-EPG$date<- as.Date(EPG$date,origin="1970-01-01")
-EPG$year<- as.numeric(substr(EPG$date,1,4))
-Treatment$Trtdate<- as.Date(Treatment$Trtdate,origin="1970-01-01")
-
 # Identify and subset epg data with treatment for the specific season
+id.or.control<- ifelse(EPG$tvnt=="treated",as.character(EPG$id),"control")
 there.is.date<- sapply(seq_len(nrow(EPG)),
                        function(i) {
-                         year.epg<- EPG$year[i];season.epg<- as.character(EPG$season[i]);
-                         id.epg<- as.character(EPG$id[i]);treatment<- EPG$treatment[i];
-                         D<- EPG$date[i];
+                         seasonchron.epg<- as.character(EPG$seasonchron[i]);
+                         id.epg<- as.character(id.or.control[i]);
+                         treatment<- EPG$treatment[i];D<- EPG$date[i];
 
-                         D.list<- Treatment[Treatment$id==id.epg & Treatment$year==year.epg & Treatment$season==season.epg,]$Trtdate
+                         D.list<- Treatment[Treatment$id==id.epg & Treatment$year==year.epg & Treatment$seasonchron==seasonchron.epg,]$Trtdate
                          cat(paste0("\rcalculating date ",i,"/",nrow(EPG)))
-                         length(closest.date(D,D.list))!=0
+                         length(D.list)!=0
                        }
 )
-
 EPG<- EPG[there.is.date,]
 
 # Match epg data with the relevant individual or average treatment date
 EPG$Trtdate<- as.Date(
   sapply(seq_len(nrow(EPG)),
          function(i) {
-           year.epg<- EPG$year[i];season.epg<- as.character(EPG$season[i]);
-           id.epg<- as.character(EPG$id[i]);treatment<- EPG$treatment[i];
-           D<- EPG$date[i];
+           seasonchron.epg<- as.character(EPG$seasonchron[i]);
+           id.epg<- as.character(EPG$id[i]);tvnt.epg<- as.character(EPG$tvnt[i]);
+           treatment<- EPG$treatment[i];D<- EPG$date[i];
 
-           D.list<- max(as.Date(Treatment[Treatment$id==id.epg & Treatment$year==year.epg & Treatment$season==season.epg,]$Trtdate))
+           D.list<- max(as.Date(Treatment[Treatment$id==ifelse(tvnt.epg=="treated",id.epg,"control") & Treatment$seasonchron==seasonchron.epg,]$Trtdate))
            cat(paste0("\rcalculating date ",i,"/",nrow(EPG)))
            closest.date(D,D.list)
          }
@@ -64,7 +56,7 @@ FECR.df<- EPG[,c("date","season","seasonchron","sample","id","tvnt","Trtdate","p
 # Subset epg data with only samples from individual that were sampled before and after treatment
 FECR.df<-  keep_with_before.after(FECR.df) # NOT SURE ABOUT INCLUDING THIS LINE OR NOT: should we remove individuals without data in both before and after, when considering mean values?
 
-FECR.group<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg)),by=.(seasonchron,tvnt,season,period,species)])
+FECR.group<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg)),by=.(seasonchron,tvnt,season,period,species)][order(seasonchron)])
 
 FECR.ind<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg)),by=.(seasonchron,tvnt,id,season,period,species)][!(tvnt=="treated"&period=="before"&epg==0)][!(tvnt=="control"&period=="after"&epg==0)])
 FECR.ind<-  keep_with_before.after(FECR.ind)
@@ -78,6 +70,8 @@ FECR.comp<- rbind_lapply(unique(FECR.df$species),
                                           C2.mean<- FECR.group[seasonchron==s & tvnt=="control" & period=="after" & species==sp]$epg
                                           T1.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="before" & species==sp]$epg
                                           T2.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="after" & species==sp]$epg
+                                          
+                                          if(any(length(C1.mean)==0,length(C2.mean)==0,length(T1.mean)==0,length(T2.mean)==0)) {return(NULL)}
                                           
                                           C1.ind.list<- C2.ind.list<- rand.ind.list(FECR.ind,s = s,group = "control",per = "before",sp = sp)
                                           T1.ind.list<- T2.ind.list<- rand.ind.list(FECR.ind,s = s,group = "treated",per = "before",sp = sp)
