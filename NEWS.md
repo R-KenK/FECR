@@ -1,3 +1,6 @@
+# FECR 3.0.1
+* updated NEWS.md
+
 # FECR 3.0.0
 * added confidence interval capabilities to FECR4-6.
 * implemented CIs in FECR calculation and FECR barplot.

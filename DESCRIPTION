@@ -1,6 +1,6 @@
 Package: FECR
 Title: FECR functions suite
-Version: 3.0.0
+Version: 3.0.1
 Authors@R: 
     person(given = "Kenneth",
            family = "Keuk",
