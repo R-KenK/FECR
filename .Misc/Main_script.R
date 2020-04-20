@@ -61,46 +61,62 @@ FECR.group<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),ep
 FECR.ind<- as.data.frame(data.table::data.table(FECR.df)[,.(date=mean(date),epg=mean(epg),sd.epg=sd(epg)),by=.(seasonchron,tvnt,id,season,period,species)][!(tvnt=="treated"&period=="before"&epg==0)][!(tvnt=="control"&period=="after"&epg==0)])
 FECR.ind<-  keep_with_before.after(FECR.ind)
 
-FECR.comp<- rbind_lapply(unique(FECR.df$species),
-                         function(sp){
-                           FECR.group<- data.table::data.table(FECR.group);FECR.ind<- data.table::data.table(FECR.ind);
-                           rbind_lapply(unique(FECR.df$seasonchron),
-                                        function(s){
-                                          C1.mean<- FECR.group[seasonchron==s & tvnt=="control" & period=="before" & species==sp]$epg
-                                          C2.mean<- FECR.group[seasonchron==s & tvnt=="control" & period=="after" & species==sp]$epg
-                                          T1.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="before" & species==sp]$epg
-                                          T2.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="after" & species==sp]$epg
-                                          
-                                          if(any(length(C1.mean)==0,length(C2.mean)==0,length(T1.mean)==0,length(T2.mean)==0)) {return(NULL)}
-                                          
-                                          C1.ind.list<- C2.ind.list<- rand.ind.list(FECR.ind,s = s,group = "control",per = "before",sp = sp)
-                                          T1.ind.list<- T2.ind.list<- rand.ind.list(FECR.ind,s = s,group = "treated",per = "before",sp = sp)
-                                          
-                                          C1.sub<- FECR.ind[seasonchron==s&period == "before"&species==sp][id %in% C1.ind.list]$epg
-                                          C2.sub<- FECR.ind[seasonchron==s&period == "after"&species==sp][id %in% C1.ind.list]$epg
-                                          T1.sub<- FECR.ind[seasonchron==s&period == "before"&species==sp][id %in% T1.ind.list]$epg
-                                          T2.sub<- FECR.ind[seasonchron==s&period == "after"&species==sp][id %in% T1.ind.list]$epg
-                                          
-                                          C1<- FECR.ind[seasonchron==s&tvnt=="control"&period == "before"&species==sp]$epg
-                                          C2<- FECR.ind[seasonchron==s&tvnt=="control"&period == "after"&species==sp]$epg
-                                          T1<- FECR.ind[seasonchron==s&tvnt=="treated"&period == "before"&species==sp]$epg
-                                          T2<- FECR.ind[seasonchron==s&tvnt=="treated"&period == "after"&species==sp]$epg
-                                          
-                                          data.frame(species=sp,seasonchron=s,
-                                                     FECR1=FECR(T1 = T1.mean,T2 = T2.mean,method = "Kochapakdee"),
-                                                     FECR2=FECR(T1 = T1.mean,T2 = T2.mean,C1 = C1.mean,C2 = C2.mean,method = "Dash"),
-                                                     FECR3=FECR(T2 = T2.mean,C2 = C2.mean,method = "Coles"),
-                                                     FECR4=FECR(T1 = T1.sub,T2 = T2.sub,method = "Cabaret1"),
-                                                     FECR5=FECR(T1 = T1.sub,T2 = T2.sub,C1 = C1.sub,C2 = C2.sub,method = "Cabaret2"),
-                                                     FECR6=FECR(T1 = T1,T2 = T2,C1 = C1,C2 = C2,method = "MacIntosh")
-                                          )
-                                        }
-                           )
-                         }
+set.seed(42)
+FECR.comp<- lapply(unique(FECR.df$species),
+                   function(sp){
+                     FECR.group<- data.table::data.table(FECR.group);FECR.ind<- data.table::data.table(FECR.ind);
+                     lapply(unique(FECR.df$seasonchron),
+                            function(s){
+                              C1.mean<- FECR.group[seasonchron==s & tvnt=="control" & period=="before" & species==sp]$epg
+                              C2.mean<- FECR.group[seasonchron==s & tvnt=="control" & period=="after" & species==sp]$epg
+                              T1.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="before" & species==sp]$epg
+                              T2.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="after" & species==sp]$epg
+                              
+                              if(any(length(C1.mean)==0,length(C2.mean)==0,length(T1.mean)==0,length(T2.mean)==0)) {return(NULL)}
+                              
+                              C1.ind.list<- C2.ind.list<- rand.ind.list(FECR.ind,s = s,group = "control",per = "before",sp = sp)
+                              T1.ind.list<- T2.ind.list<- rand.ind.list(FECR.ind,s = s,group = "treated",per = "before",sp = sp)
+                              
+                              C1.sub<- FECR.ind[seasonchron==s&period == "before"&species==sp][id %in% C1.ind.list]$epg
+                              C2.sub<- FECR.ind[seasonchron==s&period == "after"&species==sp][id %in% C1.ind.list]$epg
+                              T1.sub<- FECR.ind[seasonchron==s&period == "before"&species==sp][id %in% T1.ind.list]$epg
+                              T2.sub<- FECR.ind[seasonchron==s&period == "after"&species==sp][id %in% T1.ind.list]$epg
+                              
+                              C1<- FECR.ind[seasonchron==s&tvnt=="control"&period == "before"&species==sp]$epg
+                              C2<- FECR.ind[seasonchron==s&tvnt=="control"&period == "after"&species==sp]$epg
+                              T1<- FECR.ind[seasonchron==s&tvnt=="treated"&period == "before"&species==sp]$epg
+                              T2<- FECR.ind[seasonchron==s&tvnt=="treated"&period == "after"&species==sp]$epg
+                              
+                              FECR1<- FECR(T1 = T1.mean,T2 = T2.mean,method = "Kochapakdee")
+                              FECR2<- FECR(T1 = T1.mean,T2 = T2.mean,C1 = C1.mean,C2 = C2.mean,method = "Dash")
+                              FECR3<- FECR(T2 = T2.mean,C2 = C2.mean,method = "Coles")
+                              FECR4<- FECR(T1 = T1.sub,T2 = T2.sub,method = "Cabaret1",compute.CI = TRUE)
+                              FECR5<- FECR(T1 = T1.sub,T2 = T2.sub,C1 = C1.sub,C2 = C2.sub,method = "Cabaret2",compute.CI = TRUE)
+                              FECR6<- FECR(T1 = T1,T2 = T2,C1 = C1,C2 = C2,method = "MacIntosh",compute.CI = TRUE)
+                              FECR<- data.frame(species=sp,seasonchron=s,
+                                                FECR1=FECR1,
+                                                FECR2=FECR2,
+                                                FECR3=FECR3,
+                                                FECR4=FECR4[1],
+                                                FECR5=FECR5[1],
+                                                FECR6=FECR6[1]
+                              )
+                              attr(FECR,"CI")<- data.frame(species=sp,seasonchron=s,method=paste0("FECR",1:6),
+                                                           lower=c(FECR1,FECR2,FECR3,attr(FECR4,"CI")[1],attr(FECR5,"CI")[1],attr(FECR6,"CI")[1]),
+                                                           upper=c(FECR1,FECR2,FECR3,attr(FECR4,"CI")[2],attr(FECR5,"CI")[2],attr(FECR6,"CI")[2])
+                              )
+                              FECR
+                            }
+                     )
+                   }
 )
-# Display the table of FECR values
-FECR.comp
 
+# Save the upper and lower limits of the 95% CI (stored in a data.frame as line attribute)
+FECR.CIs<- rbind_lapply(unlist(FECR.comp,recursive = FALSE),function(r) attr(r,"CI"))
+
+# Reconstruct and display the table of FECR values
+FECR.comp<-do.call(rbind,unlist(FECR.comp,recursive = FALSE))
+FECR.comp
 
 library(ggplot2)
 # raw plotting of the data
@@ -137,8 +153,10 @@ ggplot(FECR.ind[FECR.ind$seasonchron!="2014-2.winter",],aes(period,epg,colour=pe
 
 # FECRs plots
 FECR.long<- reshape2::melt(FECR.comp,id.vars = c("species","seasonchron"),variable.name = "method",value.name = "FECR")
+FECR.long<- merge(FECR.long,FECR.CIs,by = c("species","seasonchron","method"))
 ggplot(FECR.long,aes(method,FECR,fill=method))+
   facet_wrap(seasonchron~species,ncol=2,scales = "free_y")+
+  geom_errorbar(aes(ymin=lower,ymax=upper),width=0.2,colour="grey50")+
   geom_hline(yintercept = 0)+geom_hline(yintercept = 100,lty="dashed",colour="grey50")+
   geom_bar(stat = "identity")+
   theme_bw()
