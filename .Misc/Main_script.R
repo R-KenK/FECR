@@ -18,7 +18,7 @@ there.is.date<- sapply(seq_len(nrow(EPG)),
                          id.epg<- as.character(id.or.control[i]);
                          treatment<- EPG$treatment[i];D<- EPG$date[i];
 
-                         D.list<- Treatment[Treatment$id==id.epg & Treatment$year==year.epg & Treatment$seasonchron==seasonchron.epg,]$Trtdate
+                         D.list<- Treatment[Treatment$id==id.epg & Treatment$seasonchron==seasonchron.epg,]$Trtdate
                          cat(paste0("\rcalculating date ",i,"/",nrow(EPG)))
                          length(D.list)!=0
                        }
