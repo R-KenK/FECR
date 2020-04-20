@@ -10,7 +10,10 @@ FECR(
   T2 = NULL,
   C1 = NULL,
   C2 = NULL,
-  method = c("Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2", "MacIntosh")
+  method = c("Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2", "MacIntosh"),
+  compute.CI = FALSE,
+  percentile = c(0.025, 0.975),
+  boot = 2000
 )
 }
 \arguments{
@@ -31,9 +34,15 @@ FECR(
  \item{"Cabaret2"}{the mean ratio of pre- and post-treatment epg of the treated group, correcting for the individual epg in the control group.}
  \item{"MacIntosh"}{Similar to Cabaret2, but update: now run for all pairs of Ts and Cs, to not require Ts and Cs to have the same length.}
 }}
+
+\item{compute.CI}{logical. Should confidence interval be calculated?}
+
+\item{percentile}{quantiles to use if compute.CI is TRUE, unused otherwise.}
+
+\item{boot}{number of bootstrap iteration to compute if compute.CI is TRUE, unused otherwise.}
 }
 \value{
-the fecal egg count reduction, in percentage
+the fecal egg count reduction, in percentage (if compute.CI is TRUE, a vector of lower and upper limit quantiles are passed as a "CI" attribute).
 }
 \description{
 Fecal egg count reduction
@@ -55,7 +64,8 @@ FECR(T2 = T2.mean,C2 = C2.mean,method = "Coles")
 FECR(T2 = T2,C2 = C2,method = "Coles")
 FECR(T1,T2,method = "Cabaret1")
 FECR(T1,T2,C1,C2,method = "Cabaret2")
-FECR(T1,T2,C1,C2,method = "MacIntosh")
+FECR(T1,T2,C1,C2,method = "Cabaret2",compute.CI=TRUE)
+FECR(T1,T2,C1,C2,method = "MacIntosh",compute.CI=TRUE)
 
 T1<- rpois(60,100);T1.mean<- mean(T1)
 T2<- rpois(60,10);T2.mean<- mean(T2)
@@ -63,4 +73,5 @@ C1<- rpois(50,100);C1.mean<- mean(C1)
 C2<- rpois(50,90);C2.mean<- mean(C2)
 
 FECR(T1,T2,C1,C2,method = "MacIntosh")
+FECR(T1,T2,C1,C2,method = "MacIntosh",compute.CI=TRUE)
 }
