@@ -6,7 +6,7 @@ EPG.raw<- data.table(read.csv(".Misc/Parasite.csv"))
 EPG.raw[season=="2.win",season:="2.winter"]
 
 # clean the season factor's levels
-droplevels(EPG.raw$season)
+# droplevels(EPG.raw$season) # not needed since data.table update
 EPG.raw$date<- as.Date(EPG.raw$date,origin="1970-01-01")
 
 # consistently format chronological season's name
@@ -21,7 +21,7 @@ EPG.clean$date<- as.Date(EPG.clean$date,origin="1970-01-01")
 EPG.clean$year<- year(EPG.clean$date)
 
 # format it into regular data.frame
-EPG.clean<- data.frame(EPG.clean)
+EPG<- data.frame(EPG.clean)
 
 # export into ./data/
-usethis::use_data(Treatment,overwrite = TRUE)
+usethis::use_data(EPG,overwrite = TRUE)
