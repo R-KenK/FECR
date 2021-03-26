@@ -8,14 +8,14 @@ load(file = "data/Treatment.rda")
 
 # Keep only oes and trich
 EPG<- EPG[EPG$species %in% c("oes","trich"),]
-EPG$species<- droplevels(EPG$species)
+# EPG$species<- droplevels(EPG$species) # not needed since data.table update
 
 # Identify and subset epg data with treatment for the specific season
-id.or.control<- ifelse(EPG$tvnt=="treated",as.character(EPG$id),"control")
+id.or.control<- ifelse(EPG$tvnt=="treated",EPG$id,"control")
 there.is.date<- sapply(seq_len(nrow(EPG)),
                        function(i) {
-                         seasonchron.epg<- as.character(EPG$seasonchron[i]);
-                         id.epg<- as.character(id.or.control[i]);
+                         seasonchron.epg<- EPG$seasonchron[i];
+                         id.epg<- id.or.control[i];
                          treatment<- EPG$treatment[i];D<- EPG$date[i];
 
                          D.list<- Treatment[Treatment$id==id.epg & Treatment$seasonchron==seasonchron.epg,]$Trtdate
@@ -29,8 +29,8 @@ EPG<- EPG[there.is.date,]
 EPG$Trtdate<- as.Date(
   sapply(seq_len(nrow(EPG)),
          function(i) {
-           seasonchron.epg<- as.character(EPG$seasonchron[i]);
-           id.epg<- as.character(EPG$id[i]);tvnt.epg<- as.character(EPG$tvnt[i]);
+           seasonchron.epg<- EPG$seasonchron[i];
+           id.epg<- EPG$id[i];tvnt.epg<- EPG$tvnt[i];
            treatment<- EPG$treatment[i];D<- EPG$date[i];
 
            D.list<- max(as.Date(Treatment[Treatment$id==ifelse(tvnt.epg=="treated",id.epg,"control") & Treatment$seasonchron==seasonchron.epg,]$Trtdate))
@@ -67,10 +67,10 @@ FECR.comp<- lapply(unique(FECR.df$species),
                      FECR.group<- data.table::data.table(FECR.group);FECR.ind<- data.table::data.table(FECR.ind);
                      lapply(unique(FECR.df$seasonchron),
                             function(s){
-                              C1.mean<- FECR.group[seasonchron==s & tvnt=="control" & period=="before" & species==sp]$epg
-                              C2.mean<- FECR.group[seasonchron==s & tvnt=="control" & period=="after" & species==sp]$epg
-                              T1.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="before" & species==sp]$epg
-                              T2.mean<- FECR.group[seasonchron==s & tvnt=="treated" & period=="after" & species==sp]$epg
+                              C1.mean <- FECR.group[seasonchron==s & tvnt=="control" & period=="before" & species==sp]$epg
+                              C2.mean <- FECR.group[seasonchron==s & tvnt=="control" & period=="after" & species==sp]$epg
+                              T1.mean <- FECR.group[seasonchron==s & tvnt=="treated" & period=="before" & species==sp]$epg
+                              T2.mean <- FECR.group[seasonchron==s & tvnt=="treated" & period=="after" & species==sp]$epg
                               
                               if(any(length(C1.mean)==0,length(C2.mean)==0,length(T1.mean)==0,length(T2.mean)==0)) {return(NULL)}
                               

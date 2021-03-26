@@ -1,9 +1,15 @@
 # Import raw treatment data -----------------------------------------------
 library(data.table)
-EPG.raw<- data.table(read.csv(".Misc/Parasite.csv"))
+EPG.raw <- data.table(read.csv(".Misc/Parasite.csv"))
 
 # rename consistently season names
 EPG.raw[season=="2.win",season:="2.winter"]
+
+# change numbering to help chronological ordering
+EPG.raw[season=="1.fall"  ,season:="4.fall"]
+EPG.raw[season=="2.winter",season:="1.winter"]
+EPG.raw[season=="3.spring",season:="2.spring"]
+EPG.raw[season=="4.summer",season:="3.summer"]
 
 # clean the season factor's levels
 # droplevels(EPG.raw$season) # not needed since data.table update
