@@ -94,11 +94,21 @@ check_if_valid_parameters <- function(T1 = NULL,T2 = NULL,
            if (!is.null(C1)|!is.null(C2)) {
              stop("There shouldn't be a control group with this method.")
            }
+           if (T1 == 0) {
+             stop("T1 cannot be zero.")
+           }
          },
-         "Dash" = {},
+         "Dash" = {
+           if (any(T1 == 0,C1 == 0,C2 == 0)) {
+             stop("T1,C1 or C2 cannot be zero.")
+           }
+         },
          "Coles" = {
            if (!is.null(T1) | !is.null(C1)) {
              stop("There shouldn't be pretreatment values with this method.")
+           }
+           if (C2 == 0) {
+             stop("C2 cannot be zero.")
            }
          },
          "Cabaret1" = {
@@ -122,6 +132,9 @@ check_if_valid_parameters <- function(T1 = NULL,T2 = NULL,
                    length(T1) != length(C1))) {
              stop("Some of T1,T2,C1,C2 are not of the same length.")
            }
+           if (any(T1 == 0,C1 == 0,C2 == 0)) {
+             stop("T1,C1 or C2 cannot be zero.")
+           }
          },
          "MacIntosh" = {
            if (any(length(T1) == 1,length(T2) == 1,
@@ -131,6 +144,9 @@ check_if_valid_parameters <- function(T1 = NULL,T2 = NULL,
            if (any(length(T1) != length(T2),
                    length(C1) != length(C2))) {
              stop("Either T1 vs T2 or C1 vs C2 is not of the same length.")
+           }
+           if (any(T1 == 0,C1 == 0,C2 == 0)) {
+             stop("T1,C1 or C2 cannot be zero.")
            }
          }
   )
@@ -176,7 +192,7 @@ FECR_Dash <- function(T1,T2,C1,C2) {
     if (length(C1) > 1) {C1 <- mean(C1)}
     if (length(C2) > 1) {C2 <- mean(C2)}
   }
-  r <- 100 * (1 - (T2/T1) * (C1/C2))
+  r <- 100 * (1 - (T2/T1) / (C2/C1))
   ifelse(r >= 0,r,0)
 }
 
@@ -209,7 +225,7 @@ FECR_Coles <- function(T2,C2) {
 #' @return the FECR with this method
 #' @noRd
 Cabaret1_fun <- function(n,T1,T2) {
-  r <- 1/n * sum(100 * (1 - T2/T1))
+  r <- mean(100 * (1 - T2/T1))
   ifelse(r >= 0,r,0)
 }
 
@@ -232,16 +248,13 @@ FECR_Cabaret1 <- function(T1,T2,
   n <- length(T1)
   FECR <- Cabaret1_fun(n,T1,T2)
   if (compute.CI) {
+    T2.T1 <- T2 / T1
     bootstrap <- pbapply::pbsapply(
       1:boot,
       function(b) {
-        # T1.resampled <- quick_sample(T1,n) # optimized equivalent of sample(T1,n,replace = TRUE)
-        # T2.resampled <- quick_sample(T2,n) # optimized equivalent of sample(T2,n,replace = TRUE)
-        
-        T.rand.order <- ceiling(stats::runif(length(T1),0,length(T1)))
-        T1.resampled <- T1[T.rand.order]
-        T2.resampled <- T2[T.rand.order]
-        Cabaret1_fun(n,T1.resampled,T2.resampled)
+        T2.T1.resampled <- quick_sample(T2.T1,n)
+        r <- mean(100 * (1 - T2.T1.resampled))
+        ifelse(r >= 0,r,0)
       }
     )
     attr(FECR,"CI") <- c(
@@ -263,7 +276,7 @@ FECR_Cabaret1 <- function(T1,T2,
 #' @return the FECR with this method
 #' @noRd
 Cabaret2_fun <- function(n,T1,T2,C1,C2) {
-  r <- 1/n * sum(100 * (1 - (T2/T1) * (C1/C2)))
+  r <- mean(100 * (1 - (T2/T1) / (C2/C1)))
   ifelse(r >= 0,r,0)
 }
 
@@ -285,7 +298,7 @@ FECR_Cabaret2 <- function(T1,T2,C1,C2,
                           compute.CI = FALSE,
                           percentile = c(0.025,0.975),
                           boot = 2000) {
-  n<- length(T1)
+  n <- length(T1)
   
   # # to produce a random pairing of C and T, but this is not the behavior of
   # # their original equation:
@@ -296,25 +309,13 @@ FECR_Cabaret2 <- function(T1,T2,C1,C2,
   FECR <- Cabaret2_fun(n,T1,T2,C1,C2)
   
   if (compute.CI) {
+    TC <- (T2 / T1) / (C2 / C1)
     bootstrap <- pbapply::pbsapply(
       1:boot,
       function(b) {
-        
-        # I think the resampling should be done for a paired C1-C2 (i.e. resampling at the scale of individuals per tvnt),
-        # so this version was probably wrong...
-        # C1.resampled <- quick_sample(C1,n) # optimized equivalent of sample(C1,n,replace = TRUE)
-        # C2.resampled <- quick_sample(C2,n) # optimized equivalent of sample(C2,n,replace = TRUE)
-        # T1.resampled <- quick_sample(T1,n) # optimized equivalent of sample(T1,n,replace = TRUE)
-        # T2.resampled <- quick_sample(T2,n) # optimized equivalent of sample(T2,n,replace = TRUE)
-        
-        C.rand.order <- ceiling(stats::runif(length(C1),0,length(C1)))
-        T.rand.order <- ceiling(stats::runif(length(T1),0,length(T1)))
-        C1.resampled <- C1[C.rand.order]
-        C2.resampled <- C2[C.rand.order]
-        T1.resampled <- T1[T.rand.order]
-        T2.resampled <- T2[T.rand.order]
-        
-        Cabaret2_fun(n,T1.resampled,T2.resampled,C1.resampled,C2.resampled)
+        TC.resampled <- quick_sample(TC,n)
+        r <- mean(100 * (1 - TC.resampled))
+        ifelse(r >= 0,r,0)
       }
     )
     attr(FECR,"CI") <- c(
@@ -335,12 +336,13 @@ FECR_Cabaret2 <- function(T1,T2,C1,C2,
 #'
 #' @return the FECR with this method
 #' @noRd
-MacIntosh_Keuk_fun <- function(n.m,T1,T2,C1,C2) {
-  r <- 1/n.m * sum(100 * (1 - (T2/T1) * (C1/C2)))
-  ifelse(r >= 0,r,0)
+MacIntosh_Keuk_fun <- function(T.all.pairs,C.all.pairs) {
+  r <- mean(100 * (1 - T.all.pairs / C.all.pairs))
+  r
+  # ifelse(r >= 0,r,0)
 }
 
-#' Calculate FECR according the modified Cabaret2 (MacIntosh & Keuk method
+#' Calculate FECR according the modified Cabaret2 (MacIntosh & Keuk method)
 #'
 #' @param T1 vector of individual pre-treatment epg of the treated group.
 #' @param T2 vector of individual post-treatment epg of the treated group.
@@ -361,43 +363,20 @@ FECR_MacIntosh_Keuk <- function(T1,T2,C1,C2,
   # list all pairings in a data frame
   all.pairs <- expand.grid(control = seq_along(C1),treated = seq_along(T1))
   n.m <- nrow(all.pairs)
+  
   # reshape into longer vectors (length = n² (or = n * m = length(C) * length(T) if they don't have the same length)),
   # covering all T and C pairs when aligned
-  T1.all.pairs <- T1[all.pairs$treated];T2.all.pairs <- T2[all.pairs$treated]
-  C1.all.pairs <- C1[all.pairs$control];C2.all.pairs <- C2[all.pairs$control]
+  T.all.pairs <- T2[all.pairs$treated] / T1[all.pairs$treated]
+  C.all.pairs <- C2[all.pairs$control] / C1[all.pairs$control]
   
-  FECR <- MacIntosh_Keuk_fun(n.m,
-                             T1.all.pairs,
-                             T2.all.pairs,
-                             C1.all.pairs,
-                             C2.all.pairs
-  )
+  FECR <- MacIntosh_Keuk_fun(T.all.pairs,C.all.pairs)
   if (compute.CI) {
+    TC.all.pairs <- T.all.pairs / C.all.pairs
     bootstrap <- pbapply::pbsapply(
       1:boot,
       function(b){
-        # T1.resampled <- quick_sample(T1,length(T1)) # optimized equivalent of sample(T1,length(T1),replace = TRUE)
-        # T2.resampled <- quick_sample(T2,length(T2)) # optimized equivalent of sample(T2,length(T2),replace = TRUE)
-        # C1.resampled <- quick_sample(C1,length(C1)) # optimized equivalent of sample(C1,length(C1),replace = TRUE)
-        # C2.resampled <- quick_sample(C2,length(C2)) # optimized equivalent of sample(C2,length(C2),replace = TRUE)
-        
-        C.rand.order <- ceiling(stats::runif(length(C1),0,length(C1)))
-        T.rand.order <- ceiling(stats::runif(length(T1),0,length(T1)))
-        C1.resampled <- C1[C.rand.order]
-        C2.resampled <- C2[C.rand.order]
-        T1.resampled <- T1[T.rand.order]
-        T2.resampled <- T2[T.rand.order]
-        
-        T1.all.pairs.resampled <- T1.resampled[all.pairs$treated]
-        T2.all.pairs.resampled <- T2.resampled[all.pairs$treated]
-        C1.all.pairs.resampled <- C1.resampled[all.pairs$control]
-        C2.all.pairs.resampled <- C2.resampled[all.pairs$control]
-        MacIntosh_Keuk_fun(n.m,
-                           T1.all.pairs.resampled,
-                           T2.all.pairs.resampled,
-                           C1.all.pairs.resampled,
-                           C2.all.pairs.resampled
-        )
+        TC.all.pairs.resampled <- quick_sample(TC.all.pairs,n.m)
+        mean(100 * (1 - TC.all.pairs.resampled))
       }
     )
     attr(FECR,"CI") <- c(
@@ -407,41 +386,3 @@ FECR_MacIntosh_Keuk <- function(T1,T2,C1,C2,
   }
   FECR
 }
-
-
-# ggplot(Cabaret.FECR5,aes("",Cabaret.FECR5))+
-#   geom_jitter(alpha = 0.1)+
-#   geom_boxplot(alpha = 0.3,fill = "white",colour = "black")+
-#   geom_hline(yintercept = 84,lty = "dashed",colour = "tomato")+
-#   theme_bw()
-# 
-# ggplot(Cabaret.FECR5,aes(Cabaret.FECR5))+
-#   geom_histogram(fill = "lightblue",colour = "black",binwidth = 2.5)+
-#   geom_vline(aes(xintercept = FECR(T1,T2,C1,C2,"MacIntosh"),
-#                  linetype = "Cabaret & Berrag (2004)"),colour = "blue",
-#              size = 1.3)+
-#   xlab("Distribution of FECR5 (in %) given 10000 random apairments of treated and control individuals")+
-#   geom_vline(aes(xintercept = 84,linetype = "Modified from Cabaret & Berrag (2004)"),
-#              colour = "tomato",
-#              size = 1.3)+
-#   scale_linetype_manual(
-#     name = "Reported FECR", values = c(2, 2),
-#     guide = guide_legend(override.aes = list(color = c("blue", "tomato")))
-#   )+
-#   theme_bw()
-# 
-# 
-# ggplot(Cabaret.FECR5,aes(Cabaret.FECR5))+
-#   geom_histogram(fill = "lightblue",colour = "black",binwidth = 2.5)+
-#   geom_vline(aes(xintercept = FECR(T1,T2,C1,C2,"MacIntosh"),
-#                  linetype = "Cabaret & Berrag (2004)"),colour = "blue",
-#              size = 1.3)+
-#   xlab("FECR5 (in %)")+
-#   geom_vline(aes(xintercept = 84,linetype = "Modified from Cabaret & Berrag (2004)"),
-#              colour = "tomato",
-#              size = 1.3)+
-#   scale_linetype_manual(
-#     name = "Reported FECR", values = c(2, 2),
-#     guide = guide_legend(override.aes = list(color = c("blue", "tomato")))
-#   )+
-#   theme_bw()
