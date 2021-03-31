@@ -54,8 +54,9 @@ remove_potential_division.by.zero <- function(fecr.df,method = c("Kochapakdee","
          "Cabaret2" = ,
          "MacIntosh" = {
            T1.is.zero <- fecr.df$tvnt == "treated" & fecr.df$period == "before" & fecr.df$epg == 0
+           C1.is.zero <- fecr.df$tvnt == "control" & fecr.df$period == "before" & fecr.df$epg == 0
            C2.is.zero <- fecr.df$tvnt == "control" & fecr.df$period == "after" & fecr.df$epg == 0
-           fecr.df <- fecr.df[!T1.is.zero & !C2.is.zero]
+           fecr.df <- fecr.df[!T1.is.zero & !C1.is.zero & !C2.is.zero]
            keep_with_before.after(fecr.df)
          }
   )
@@ -219,7 +220,11 @@ FECR_from_df <- function (fecr.df,
                           method = c("Kochapakdee","Dash","Coles","Cabaret1","Cabaret2","MacIntosh"),
                           compute.CI = FALSE,percentile = c(0.025,0.975),boot = 2000) {
   switch(method,
-         "Kochapakdee" = ,
+         "Kochapakdee" = {
+           T1 <- subset_lines_of_group.period(fecr.df,"T1")$epg
+           T2 <- subset_lines_of_group.period(fecr.df,"T2")$epg
+           FECR(T1 = T1,T2 = T2,method = method,compute.CI = compute.CI,percentile = percentile,boot = boot)
+         },
          "Cabaret1" = {
            T1 <- subset_lines_of_group.period(fecr.df,"T1")$epg
            T2 <- subset_lines_of_group.period(fecr.df,"T2")$epg
@@ -264,17 +269,17 @@ FECR_from_df <- function (fecr.df,
   )
 }
 
-FECR_from_df.across.season <- function(fecr.df,
+FECR_from_df.across.season <- function(fecr.df,seasons = unique(fecr.df$seasonchron),
                                        method = c("Kochapakdee","Dash","Coles","Cabaret1","Cabaret2","MacIntosh"),
                                        compute.CI = FALSE,percentile = c(0.025,0.975),boot = 2000) {
   rbind_lapply(
-    unique(fecr.df$seasonchron),
+    seasons,
     function(s) {
       rbind_lapply(
         unique(fecr.df$species),
         function(sp) {
           fecr.df.season.sp <- subset(fecr.df,subset = seasonchron == s & species == sp)
-          FECR <- FECR_from_df(fecr.df.season.sp,method,compute.CI = compute.CI,percentile = percentile,boot = boot)
+          FECR <- FECR_from_df(fecr.df = fecr.df.season.sp,method = method,compute.CI = compute.CI,percentile = percentile,boot = boot)
           if (compute.CI) {
             data.frame(
               seasonchron = s,
@@ -304,8 +309,8 @@ FECR_from_df.across.season.method <- function(fecr.df,avg_fun = mean,only_with_b
   rbind_lapply(
     methods,
     function(method) {
-      fecr.df <- prepare_fecr.df(fecr.df,method,avg_fun = avg_fun,only_with_before.after = only_with_before.after)
-      FECR_from_df.across.season(fecr.df,method,compute.CI = compute.CI,percentile = percentile,boot = boot)
+      fecr.df <- prepare_fecr.df(fecr.df = fecr.df,method = method,avg_fun = avg_fun,only_with_before.after = only_with_before.after)
+      FECR_from_df.across.season(fecr.df = fecr.df,method = method,compute.CI = compute.CI,percentile = percentile,boot = boot)
     }
   )
 }
