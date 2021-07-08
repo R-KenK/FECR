@@ -1,5 +1,5 @@
 ---
-title: "SimuNet - First steps"
+title: "FECR - Examples"
 output: 
   html_document: 
     toc: true

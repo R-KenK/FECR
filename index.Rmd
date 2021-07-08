@@ -1,7 +1,7 @@
 ---
-title: "SimuNet - Network simulations, with a zest of empirism"
+title: "FECR - Updated Fecal Egg Count Reduction tests"
 author: "Kenneth Keuk"
-date: "02/02/2021"
+date: "08/07/2021"
 output: 
   html_document: 
     toc: yes
