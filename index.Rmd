@@ -1,0 +1,15 @@
+---
+title: "SimuNet - Network simulations, with a zest of empirism"
+author: "Kenneth Keuk"
+date: "02/02/2021"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: true 
+---
+
+Welcome to SimuNet! An R package designed for your empirical (social) network simulation needs!  
+  
+This website is currently in construction, and the package itself is still evolving pretty quickly.  
+
+Stay tuned for more!
