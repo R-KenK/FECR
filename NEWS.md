@@ -1,3 +1,7 @@
+# FECR 4.0.0
+* cleaned package's structure, preparing for clean release
+* moved check and averaging functions to separate files, moves conditional averaging to a wrapper function
+
 # FECR 3.0.1
 * updated NEWS.md
 
