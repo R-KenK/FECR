@@ -393,7 +393,7 @@ FECR_MacIntosh_Keuk <- function(T1,T2,C1,C2,
   all.pairs <- expand.grid(control = seq_along(C1),treated = seq_along(T1))
   n.m <- nrow(all.pairs)
   
-  # reshape into longer vectors (length = n² (or = n * m = length(C) * length(T) if they don't have the same length)),
+  # reshape into longer vectors (length = n^2 (or = n * m = length(C) * length(T) if they don't have the same length)),
   # covering all T and C pairs when aligned
   T.all.pairs <- T2[all.pairs$treated] / T1[all.pairs$treated]
   C.all.pairs <- C2[all.pairs$control] / C1[all.pairs$control]
