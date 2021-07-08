@@ -28,7 +28,7 @@ A user willing to run simulations with SimuNet can import an `Adj` matrix and `t
 *  randomly generate an `Adj` matrix and `total_scan`:  
 ```{r random init}
 set.seed(42)
-library(SimuNet)
+library(FECR)
 
 # for a random directed matrix
 n <- 5;nodes <- letters[1:n];
@@ -38,71 +38,6 @@ Adj <- matrix(data = 0L,nrow = n,
               ncol = n,
               dimnames = list(nodes,nodes)
 )
-Adj[non.diagonal(Adj)] <- round(runif(n*(n-1),0,total_scan))
 Adj
 
 ```
-*  import them from their real-life observations:  
-```{r manuual init}
-# create... 
-Adj <- matrix(c(0,12,34,56,78,
-                91,0,23,45,67,
-                89,12,0,34,56,
-                78,91,23,0,45,
-                67,89,12,23,0),
-              ncol = 5,byrow = TRUE,
-              dimnames = list(1:5,1:5)
-)
-total_scan <- 100
-Adj
-# ... or import a matrix using your favorite method (e.g. read.csv)
-
-```
-
-*  find such data from the literature,  
-*  or get them from the special case of the [Animal Social Network Repository](https://bansallab.github.io/asnr/)  
-
-```{r asnr import as matrix}
-Adj <- import_from_asnr("Mammalia",
-                        "kangaroo_proximity_weighted",
-                        output = "adjacency",type = "upper")
-total_scan <- 241 # number of observations reported by the author
-# data retrieved from (Grant, 1973)
-# DOI: 10.1016/S0003-3472(73)80004-1
-Adj
-```
-## Familiarizing with the data  
-Our last example represented a social network of a group of kangaroo, the weights of which representing how many times each pair of kangaroos was observed in association, after 241 observations, or "scans".  
-\  
-The user can reconstruct an [igraph](https://igraph.org/r/) network (or graph) object from igraph's set of functions, but SimuNet's custom asnr importer can also output such an object directly by specifying the output (among "graph" and "adjacency"):  
-```{r plotting original Adj}
-G <- import_from_asnr("Mammalia",
-                      "kangaroo_proximity_weighted",
-                      output = "graph",type = "upper")
-G
-G.deg <- igraph::degree(G)
-G.E <- igraph::E(G)$weight
-plot(G,
-     vertex.size = G.deg * 1.2,
-     vertex.label = NA,
-     edge.width = 15 * (G.E - min(G.E)) /
-       (max(G.E) - min(G.E))
-)
-```
-  
-Before jumping into SimuNet, let's set one igraph layout to reuse later, for comparison purposes:  
-```{r plotting set layout Adj}
-G.layout <- igraph::layout_with_fr(G)
-plot(G,
-     vertex.size = G.deg * 1.2,
-     vertex.label = NA,
-     edge.width = 15 * (G.E - min(G.E)) / (max(G.E) - min(G.E)),
-     layout = G.layout
-)
-```
-  
-# Introducing SimuNet  
-## Basic functionalities  
-SimuNet's goal is to randomly generate weighted (social) networks by simulating how each final weight has been in fact obtained after summing binary events.  
-  
-INSERT INFOGRAPHIC?
