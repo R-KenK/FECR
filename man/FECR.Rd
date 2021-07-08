@@ -13,7 +13,8 @@ FECR(
   method = c("Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2", "MacIntosh"),
   compute.CI = FALSE,
   percentile = c(0.025, 0.975),
-  boot = 2000
+  boot = 2000,
+  boot.original.data = FALSE
 )
 }
 \arguments{
@@ -49,7 +50,7 @@ Fecal egg count reduction
 Calculate the FECR according to several methods described (cf. Cabaret & Berrag (2004))
 }
 \details{
-for more informations, cf. Cabaret & Berrag (2004) and the literature they refer to.
+for more information, cf. Cabaret & Berrag (2004) and the literature they refer to.
 }
 \examples{
 set.seed(42)
