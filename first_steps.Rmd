@@ -278,11 +278,10 @@ CI.shuffled <- replicate(
     T2.new <- T2[new.T]
     C1.new <- C1[new.C]
     C2.new <- C2[new.C]
-    Cab <- invisible(FECR(T1.new,T2.new,C1.new,C2.new,method = "Cabaret2",compute.CI = TRUE))
-    Mac <- invisible(FECR(T1.new,T2.new,C1.new,C2.new,method = "MacIntosh",compute.CI = FALSE))
-    
-    
-    Mac <- FECR(T1.new,T2.new,C1.new,C2.new,method = "MacIntosh",compute.CI = FALSE)
+    Cab <- FECR(T1.new,T2.new,C1.new,C2.new,method = "Cabaret2",
+                          compute.CI = TRUE,pb = FALSE)
+    Mac <- FECR(T1.new,T2.new,C1.new,C2.new,method = "MacIntosh",
+                          compute.CI = TRUE,pb = FALSE)
 
     #FECR calculations
     data.frame(
@@ -299,12 +298,12 @@ CI.shuffled <- replicate(
     )
   }
 ) %>% 
-  do.call(rbind,.)
+  do.call(rbind,.) %>% 
+  cbind(rep = factor(rep(1:100,each = 2)),.)
 CI.shuffled %>% 
-  ggplot(aes(x = FECR,fill = method))+
-  facet_grid(method~.,scales = "free")+
-  geom_histogram(binwidth = 2,alpha = 80)+
-  guides(fill = "none")+
-  scale_x_continuous(limits = c(0,100))+
+  ggplot(aes(method,FECR,colour = method,group = rep))+
+  geom_linerange(aes(ymin = lower,ymax = upper),position = position_dodge(.9))+
+  geom_point(position = position_dodge(.9))+
+  guides(colour = "none")+
   theme_bw()
 ```
