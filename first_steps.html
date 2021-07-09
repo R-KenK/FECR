@@ -393,7 +393,7 @@ FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Cabaret2&quot;,compute.CI = TRUE
 ## attr(,&quot;CI&quot;)
 ##     2.5%    97.5% 
 ## 63.23173 85.67652</code></pre>
-<p>Note that shuffling obviously didn’t change EPG distribution in T and C groups:</p>
+<p>Note that shuffling obviously has not change EPG distribution in T and C groups:</p>
 <pre class="r"><code>summary(T1)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##     450     500     850    1050    1250    2550</code></pre>
@@ -406,7 +406,7 @@ FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Cabaret2&quot;,compute.CI = TRUE
 <pre class="r"><code>summary(C2.new)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   350.0   450.0   550.0   726.7   900.0  1750.0</code></pre>
-<p>And neither are methods based on group-averaged EPG</p>
+<p>And neither have methods based on group-averaged EPG</p>
 <pre class="r"><code>FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Dash&quot;)                       # 90% in the original paper</code></pre>
 <pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in
 ## place of a mean. The arithmetic mean of the vector has been used.</code></pre>

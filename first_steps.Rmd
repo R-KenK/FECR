@@ -131,7 +131,7 @@ C2.new <- C2[new.C]
 FECR(T1.new,T2.new,C1.new,C2.new,method = "Cabaret2",compute.CI = TRUE)
 FECR(T1.new,T2.new,C1.new,C2.new,method = "MacIntosh",compute.CI = TRUE)
 ```
-Note that shuffling obviously didn't change EPG distribution in T and C groups:
+Note that shuffling obviously has not change EPG distribution in T and C groups:
 ```{r suffling effects 1}
 summary(T1)
 summary(T1.new)
@@ -139,7 +139,7 @@ summary(C2)
 summary(C2.new)
 ```
 
-And neither are methods based on group-averaged EPG
+And neither have methods based on group-averaged EPG
 ```{r suffling effects 2}
 FECR(T1.new,T2.new,C1.new,C2.new,method = "Dash")                       # 90% in the original paper
 FECR(T2 = T2.new,C2 = C2.new,method = "Coles")        # 86% in the original paper
