@@ -150,7 +150,7 @@ reshuffling:
 
 ```{r pitfall 1 details}
 library(ggplot2)
-library(dplyr)
+library(magrittr)
 
 set.seed(9000)
 

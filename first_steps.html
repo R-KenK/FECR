@@ -415,16 +415,9 @@ FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Cabaret2&quot;,compute.CI = TRUE
 <pre><code>## [1] 85.47401</code></pre>
 <p>More precisely, here is the bootstrapped distribution of the FECR value itself (not its confidence interval), across several reshuffling:</p>
 <pre class="r"><code>library(ggplot2)
-library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>set.seed(9000)
+library(magrittr)
+
+set.seed(9000)
 
 # replicating the shuffling of T and C
 FECR.shuffled &lt;- replicate(
