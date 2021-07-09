@@ -57,8 +57,8 @@ FECR(T1,T2,C1,C2,method = "MacIntosh",compute.CI = TRUE)
 ### When sample size is uneven
 The last included method, `"MacIntosh"`, is an improvement of the `"Cabaret2"` that:    
 
-    *  depends on the arbitrary pair-matchings of individuals in the control (C) and test (T) groups
-    *  cannot be applied to unequal sample-sizes without arbitrarily subset the larger group
+*  depends on the arbitrary pair-matchings of individuals in the control (C) and test (T) groups
+*  cannot be applied to unequal sample-sizes without arbitrarily subset the larger group
     
 ```{r unequal samp FECR, error=TRUE}
 # Generate random EPG values, in the case of unequal sample size

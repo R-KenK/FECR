@@ -299,8 +299,10 @@ FECR(T1.mean,T2.mean,method = &quot;Kochapakdee&quot;)</code></pre>
 <div id="when-sample-size-is-uneven" class="section level3">
 <h3>When sample size is uneven</h3>
 <p>The last included method, <code>&quot;MacIntosh&quot;</code>, is an improvement of the <code>&quot;Cabaret2&quot;</code> that:</p>
-<pre><code>*  depends on the arbitrary pair-matchings of individuals in the control (C) and test (T) groups
-*  cannot be applied to unequal sample-sizes without arbitrarily subset the larger group</code></pre>
+<ul>
+<li>depends on the arbitrary pair-matchings of individuals in the control (C) and test (T) groups</li>
+<li>cannot be applied to unequal sample-sizes without arbitrarily subset the larger group</li>
+</ul>
 <pre class="r"><code># Generate random EPG values, in the case of unequal sample size
 T1 &lt;- rpois(60,100);T1.mean&lt;- mean(T1)
 T2 &lt;- rpois(60,10);T2.mean&lt;- mean(T2)
