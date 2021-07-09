@@ -1,3 +1,6 @@
+# FECR 4.0.1
+* Added `"pb"` argument to `FECR()` to not display a progress bar
+
 # FECR 4.0.0
 * cleaned package's structure, preparing for clean release
 * moved check and averaging functions to separate files, moves conditional averaging to a wrapper function
