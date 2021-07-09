@@ -14,7 +14,8 @@ FECR(
   compute.CI = FALSE,
   percentile = c(0.025, 0.975),
   boot = 2000,
-  boot.original.data = FALSE
+  boot.original.data = FALSE,
+  pb = TRUE
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ FECR(
 \item{boot}{number of bootstrap iteration to compute if compute.CI is TRUE, unused otherwise.}
 
 \item{boot.original.data}{logical, should the original data be bootstrapped?}
+
+\item{pb}{logical, a progress bar be displayed during bootstrap?}
 }
 \value{
 the fecal egg count reduction, in percentage (if compute.CI is TRUE, a vector of lower

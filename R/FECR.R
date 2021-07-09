@@ -22,6 +22,7 @@
 #' @param percentile quantiles to use if compute.CI is TRUE, unused otherwise.
 #' @param boot number of bootstrap iteration to compute if compute.CI is TRUE, unused otherwise.
 #' @param boot.original.data logical, should the original data be bootstrapped?
+#' @param pb logical, a progress bar be displayed during bootstrap?
 #'
 #' @details for more information, cf. Cabaret & Berrag (2004) and the literature they refer to.
 #' 
@@ -59,7 +60,7 @@
 FECR <- function(T1 = NULL,T2 = NULL,C1 = NULL,C2 = NULL,
                  method = c("Kochapakdee","Dash","Coles","Cabaret1","Cabaret2","MacIntosh"),
                  compute.CI = FALSE,percentile = c(0.025,0.975),boot = 2000,
-                 boot.original.data = FALSE) {
+                 boot.original.data = FALSE,pb = TRUE) {
   method <- match.arg(method)
   arg.list <- list(T1 = T1,T2 = T2,C1 = C1,C2 = C2,method = method)
   arg.list <- average_if_required(arg.list)
@@ -75,12 +76,12 @@ FECR <- function(T1 = NULL,T2 = NULL,C1 = NULL,C2 = NULL,
          "Dash" = FECR_Dash(T1,T2,C1,C2),
          "Coles" = FECR_Coles(T2,C2),
          "Cabaret1" = FECR_Cabaret1(T1,T2,compute.CI = compute.CI,percentile = percentile,
-                                    boot = boot,boot.original.data = boot.original.data),
+                                    boot = boot,boot.original.data = boot.original.data,pb = pb),
          "Cabaret2" = FECR_Cabaret2(T1,T2,C1,C2,compute.CI = compute.CI,percentile = percentile,
-                                    boot = boot,boot.original.data = boot.original.data),
+                                    boot = boot,boot.original.data = boot.original.data,pb = pb),
          "MacIntosh" = FECR_MacIntosh_Keuk(T1,T2,C1,C2,compute.CI = compute.CI,
                                            percentile = percentile,boot = boot,
-                                           boot.original.data = boot.original.data)
+                                           boot.original.data = boot.original.data,pb = pb)
   )
 }
 
@@ -147,6 +148,8 @@ Cabaret1_fun <- function(n,T1,T2) {
 #' @param compute.CI logical. Should confidence interval be calculated? 
 #' @param percentile quantiles to use if compute.CI is TRUE, unused otherwise.
 #' @param boot number of bootstrap iteration to compute if compute.CI is TRUE, unused otherwise.
+#' @param boot.original.data logical, should the original data be bootstrapped?
+#' @param pb logical, a progress bar be displayed during bootstrap?
 #'
 #' @details for more information, cf. Cabaret & Berrag (2004) and the literature they refer to.
 #'
@@ -156,12 +159,13 @@ FECR_Cabaret1 <- function(T1,T2,
                           compute.CI = FALSE,
                           percentile = c(0.025,0.975),
                           boot = 2000,
-                          boot.original.data = FALSE) {
+                          boot.original.data = FALSE,pb = TRUE) {
   n <- length(T1)
   FECR <- Cabaret1_fun(n,T1,T2)
   if (compute.CI) {
+    if (pb) {Xapply <- pbapply::pbsapply} else {Xapply <- sapply}
     if (boot.original.data) {
-      bootstrap <- pbapply::pbsapply(
+      bootstrap <- Xapply(
         1:boot,
         function(b) {
           T1.resampled <- quick_sample(T1,n)
@@ -171,7 +175,7 @@ FECR_Cabaret1 <- function(T1,T2,
       )
     } else {
       T2.T1 <- T2 / T1
-      bootstrap <- pbapply::pbsapply(
+      bootstrap <- Xapply(
         1:boot,
         function(b) {
           T2.T1.resampled <- quick_sample(T2.T1,n)
@@ -212,6 +216,8 @@ Cabaret2_fun <- function(n,T1,T2,C1,C2) {
 #' @param compute.CI logical. Should confidence interval be calculated? 
 #' @param percentile quantiles to use if compute.CI is TRUE, unused otherwise.
 #' @param boot number of bootstrap iteration to compute if compute.CI is TRUE, unused otherwise.
+#' @param boot.original.data logical, should the original data be bootstrapped?
+#' @param pb logical, a progress bar be displayed during bootstrap?
 #'
 #' @details for more information, cf. Cabaret & Berrag (2004) and the literature they refer to.
 #'
@@ -221,7 +227,7 @@ FECR_Cabaret2 <- function(T1,T2,C1,C2,
                           compute.CI = FALSE,
                           percentile = c(0.025,0.975),
                           boot = 2000,
-                          boot.original.data = FALSE) {
+                          boot.original.data = FALSE,pb = TRUE) {
   n <- length(T1)
   
   # # to produce a random pairing of C and T, but this is not the behavior of
@@ -230,13 +236,15 @@ FECR_Cabaret2 <- function(T1,T2,C1,C2,
   # C1 <- C1[C.order];C2 <- C2[C.order]
   # T1 <- T1[T.order];T2 <- T2[T.order]
   
+  
   FECR <- Cabaret2_fun(n,T1,T2,C1,C2)
   
   if (compute.CI) {
+    if (pb) {Xapply <- pbapply::pbsapply} else {Xapply <- sapply}
     if (boot.original.data) {
       T2.T1 <- T2 / T1
       C2.C1 <- C2 / C1
-      bootstrap <- pbapply::pbsapply(
+      bootstrap <- Xapply(
         1:boot,
         function(b) {
           T.resampled <- quick_sample(T2.T1,n)
@@ -247,7 +255,7 @@ FECR_Cabaret2 <- function(T1,T2,C1,C2,
       )
     } else {
       TC <- (T2 / T1) / (C2 / C1)
-      bootstrap <- pbapply::pbsapply(
+      bootstrap <- Xapply(
         1:boot,
         function(b) {
           TC.resampled <- quick_sample(TC,n)
@@ -289,6 +297,8 @@ MacIntosh_Keuk_fun <- function(T.all.pairs,C.all.pairs) {
 #' @param compute.CI logical. Should confidence interval be calculated? 
 #' @param percentile quantiles to use if compute.CI is TRUE, unused otherwise.
 #' @param boot number of bootstrap iteration to compute if compute.CI is TRUE, unused otherwise.
+#' @param boot.original.data logical, should the original data be bootstrapped?
+#' @param pb logical, a progress bar be displayed during bootstrap?
 #'
 #' @details for more information, cf. Cabaret & Berrag (2004) and the literature they refer to.
 #'
@@ -298,7 +308,7 @@ FECR_MacIntosh_Keuk <- function(T1,T2,C1,C2,
                           compute.CI = FALSE,
                           percentile = c(0.025,0.975),
                           boot = 2000,
-                          boot.original.data = FALSE) {
+                          boot.original.data = FALSE,pb = TRUE) {
   # list all pairings in a data frame
   all.pairs <- expand.grid(control = seq_along(C1),treated = seq_along(T1))
   n.m <- nrow(all.pairs)
@@ -308,12 +318,15 @@ FECR_MacIntosh_Keuk <- function(T1,T2,C1,C2,
   T.all.pairs <- T2[all.pairs$treated] / T1[all.pairs$treated]
   C.all.pairs <- C2[all.pairs$control] / C1[all.pairs$control]
   
+  
+  
   FECR <- MacIntosh_Keuk_fun(T.all.pairs,C.all.pairs)
   if (compute.CI) {
+    if (pb) {Xapply <- pbapply::pbsapply} else {Xapply <- sapply}
     if (boot.original.data) {
       T2.T1 <- T2 / T1
       C2.C1 <- C2 / C1
-      bootstrap <- pbapply::pbsapply(
+      bootstrap <- Xapply(
         1:boot,
         function(b) {
           T.resampled <- quick_sample(T2.T1,length(T2.T1))
@@ -329,7 +342,7 @@ FECR_MacIntosh_Keuk <- function(T1,T2,C1,C2,
       )
     } else {
       TC.all.pairs <- T.all.pairs / C.all.pairs
-      bootstrap <- pbapply::pbsapply(
+      bootstrap <- Xapply(
         1:boot,
         function(b){
           TC.all.pairs.resampled <- quick_sample(TC.all.pairs,n.m)
