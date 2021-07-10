@@ -386,14 +386,12 @@ C2 &lt;- rpois(50,90);C2.mean &lt;- mean(C2)</code></pre>
 FECR(T1.mean,T2.mean,method = &quot;Kochapakdee&quot;)</code></pre>
 <pre><code>## [1] 89.97253</code></pre>
 <pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;Dash&quot;)</code></pre>
-<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in
-## place of a mean. The arithmetic mean of the vector has been used.</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the vector has been used.</code></pre>
 <pre><code>## [1] 88.83641</code></pre>
 <pre class="r"><code>FECR(T2 = T2.mean,C2 = C2.mean,method = &quot;Coles&quot;)</code></pre>
 <pre><code>## [1] 88.55799</code></pre>
 <pre class="r"><code>FECR(T2 = T2,C2 = C2,method = &quot;Coles&quot;)</code></pre>
-<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in
-## place of a mean. The arithmetic mean of the vector has been used.</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the vector has been used.</code></pre>
 <pre><code>## [1] 88.55799</code></pre>
 <pre class="r"><code>FECR(T1,T2,method = &quot;Cabaret1&quot;)</code></pre>
 <pre><code>## [1] 89.89805</code></pre>
@@ -459,8 +457,7 @@ C2.mean &lt;- mean(C2)</code></pre>
 FECR(T1.mean,T2.mean,method = &quot;Kochapakdee&quot;)            # 90% in the original paper</code></pre>
 <pre><code>## [1] 89.94709</code></pre>
 <pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;Dash&quot;)                       # 90% in the original paper</code></pre>
-<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in
-## place of a mean. The arithmetic mean of the vector has been used.</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the vector has been used.</code></pre>
 <pre><code>## [1] 89.47058</code></pre>
 <pre class="r"><code>FECR(T2 = T2.mean,C2 = C2.mean,method = &quot;Coles&quot;)        # 86% in the original paper</code></pre>
 <pre><code>## [1] 85.47401</code></pre>
@@ -522,12 +519,10 @@ FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Cabaret2&quot;,compute.CI = TRUE
 ##   350.0   450.0   550.0   726.7   900.0  1750.0</code></pre>
 <p>And neither have methods based on group-averaged EPG</p>
 <pre class="r"><code>FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Dash&quot;)                       # 90% in the original paper</code></pre>
-<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in
-## place of a mean. The arithmetic mean of the vector has been used.</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the vector has been used.</code></pre>
 <pre><code>## [1] 89.47058</code></pre>
 <pre class="r"><code>FECR(T2 = T2.new,C2 = C2.new,method = &quot;Coles&quot;)        # 86% in the original paper</code></pre>
-<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in
-## place of a mean. The arithmetic mean of the vector has been used.</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the vector has been used.</code></pre>
 <pre><code>## [1] 85.47401</code></pre>
 <p>More precisely, here is the bootstrapped distribution of the FECR value itself (not its confidence interval), across several reshuffling:</p>
 <pre class="r"><code>library(ggplot2)
