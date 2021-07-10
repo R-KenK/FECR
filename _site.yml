@@ -1,0 +1,15 @@
+name: "FECR package"
+navbar:
+  title: "FECR package"
+  type: inverse
+  left:
+    - text: "Home"
+      icon: fa-home
+      href: index.html
+    - text: "First steps"
+      icon: fa-shoe-prints
+      href: first_steps.html
+  right:
+    - text: "Github repository"
+      icon: fa-github
+      href: https://github.com/R-KenK/FECR
