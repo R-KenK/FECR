@@ -315,4 +315,7 @@ CI.shuffled %>%
   theme_bw()
 ```
 
-Our proposed method is designed to calculate a FECR value (and its confidence interval) that is unique for a given set of EPG values in T and C groups. The only slight variations observed regarding the boundaries of the confidence interval is attributable to the bootstrap's own random resampling.
+Our proposed method is designed to calculate a FECR value (and its confidence interval) that is
+unique for a given set of EPG values in T and C groups. The only slight variations observed
+regarding the boundaries of the confidence interval is attributable to the bootstrap's own random
+resampling.
