@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>FECR - Use examples</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">FECR package</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="first_steps.html">
+    <span class="fa fa-shoe-prints"></span>
+     
+    First steps
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/R-KenK/FECR">
+    <span class="fa fa-github"></span>
+     
+    Github repository
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">FECR - Use examples</h1>
+
+</div>
+
+
+<p>In this page we show of to perform FECR tests - Fecal Egg Count Reduction tests - from individual values of EPG: egg per gram of feces/fecal sediment.</p>
+<p>Implemented methods refer to Cabaret &amp; Berrag (2004), as well as our method that improve their proposed best approach.</p>
+<p>We demonstrate the use of these methods on simulated data, as well as the toy example presented in this reference article.</p>
+<div id="use-example-on-simulated-data" class="section level1">
+<h1>Use example on simulated data</h1>
+<div id="epg-simulation" class="section level2">
+<h2>EPG simulation</h2>
+<p>We simulate EPG values (one per individual) by drawing from poisson distributions as follow:</p>
+<pre class="r"><code>library(FECR)
+
+set.seed(42)
+
+# Generate random EPG values, in the simple case of equal sample size
+T1 &lt;- rpois(50,100);T1.mean &lt;- mean(T1)
+T2 &lt;- rpois(50,10);T2.mean &lt;- mean(T2)
+C1 &lt;- rpois(50,100);C1.mean &lt;- mean(C1)
+C2 &lt;- rpois(50,90);C2.mean &lt;- mean(C2)</code></pre>
+</div>
+<div id="fecr-calculations" class="section level2">
+<h2>FECR calculations</h2>
+<div id="when-sample-size-is-the-same" class="section level3">
+<h3>When sample size is the same</h3>
+<p>The <code>FECR()</code> function of this <code>FECR</code> package takes vectors of EPG values as arguments <code>T1</code>, <code>T2</code>, <code>C1</code>, and <code>C2</code>.</p>
+<p>From these values, you can specify a method between <code>"Kochapakdee"</code>, <code>"Dash"</code>, <code>"Coles"</code>, <code>"Cabaret1"</code>, <code>"Cabaret2"</code>.</p>
+<p>Note that some of these methods do not require all arguments: for these methods, you will need to specify what EPG values are inputted through named arguments (e.g. <code>T2 = your.vector</code>), otherwise an error message will be displayed.</p>
+<p>The logical argument <code>compute.CI</code> allows for the computation of a confidence interval (95% by default) for individual-based methods (cf. Cabaret &amp; Berrag, 2004)</p>
+<pre class="r"><code># Calculation of FECR values according to different methods
+FECR(T1.mean,T2.mean,method = &quot;Kochapakdee&quot;)</code></pre>
+<pre><code>## [1] 89.97253</code></pre>
+<pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;Dash&quot;)</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the
+## vector has been used.</code></pre>
+<pre><code>## [1] 88.83641</code></pre>
+<pre class="r"><code>FECR(T2 = T2.mean,C2 = C2.mean,method = &quot;Coles&quot;)</code></pre>
+<pre><code>## [1] 88.55799</code></pre>
+<pre class="r"><code>FECR(T2 = T2,C2 = C2,method = &quot;Coles&quot;)</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the
+## vector has been used.</code></pre>
+<pre><code>## [1] 88.55799</code></pre>
+<pre class="r"><code>FECR(T1,T2,method = &quot;Cabaret1&quot;)</code></pre>
+<pre><code>## [1] 89.89805</code></pre>
+<pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;Cabaret2&quot;)</code></pre>
+<pre><code>## [1] 88.602</code></pre>
+<pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;Cabaret2&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## [1] 88.602
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 87.35018 89.75919</code></pre>
+<pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;MacIntosh&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## [1] 88.61238
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 88.44445 88.76411</code></pre>
+</div>
+<div id="when-sample-size-is-uneven" class="section level3">
+<h3>When sample size is uneven</h3>
+<p>The last included method, <code>"MacIntosh"</code>, is an improvement of the <code>"Cabaret2"</code> that:</p>
+<ul>
+<li>depends on the arbitrary pair-matchings of individuals in the control (C) and test (T) groups</li>
+<li>cannot be applied to unequal sample-sizes without arbitrarily subset the larger group</li>
+</ul>
+<pre class="r"><code># Generate random EPG values, in the case of unequal sample size
+T1 &lt;- rpois(60,100);T1.mean&lt;- mean(T1)
+T2 &lt;- rpois(60,10);T2.mean&lt;- mean(T2)
+C1 &lt;- rpois(50,100);C1.mean&lt;- mean(C1)
+C2 &lt;- rpois(50,90);C2.mean&lt;- mean(C2)
+
+# Calculation of FECR values according to our sample-size unsensitive method
+FECR(T1,T2,C1,C2,method = &quot;Cabaret2&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## Error in check_if_valid_parameters(arg.list): Some of T1,T2,C1,C2 are not of the same length.</code></pre>
+<pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;MacIntosh&quot;)</code></pre>
+<pre><code>## [1] 87.46709</code></pre>
+<pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;MacIntosh&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## [1] 87.46709
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 87.28565 87.64213</code></pre>
+</div>
+</div>
+</div>
+<div id="why-improve-the-method-from-cabaret-berrag-2004" class="section level1">
+<h1>Why improve the method from Cabaret &amp; Berrag (2004)?</h1>
+<p>The motivation that led us to propose an improvement over the individual method proposed by the authors is that we identified the two pitfalls mentioned in the previous paragraph, i.e. the arbitrary pair-matching and requirement of an even sample-size.</p>
+<p>Hereafter, we demonstrate the issue from the paper’s own toy example.</p>
+<div id="epg-values-import" class="section level2">
+<h2>EPG values import</h2>
+<pre class="r"><code># Generate random EPG values, in the simple case of equal sample size
+T1 &lt;- c(450,1250,1700,900,2550,500,750,850,500)
+T1.mean &lt;- mean(T1)
+T2 &lt;- c(50,0,0,0,50,450,400,0,0)
+T2.mean &lt;- mean(T2)
+C1 &lt;- c(750,600,500,700,1000,700,300,1250,1050)
+C1.mean &lt;- mean(C1)
+C2 &lt;- c(540,400,1000,1750,350,600,900,550,450)
+C2.mean &lt;- mean(C2)</code></pre>
+</div>
+<div id="fecr-calculations-1" class="section level2">
+<h2>FECR calculations</h2>
+<p>As expected, we find FECR values similar to what the authors report:</p>
+<pre class="r"><code># Generate random EPG values, in the simple case of equal sample size
+FECR(T1.mean,T2.mean,method = &quot;Kochapakdee&quot;)            # 90% in the original paper</code></pre>
+<pre><code>## [1] 89.94709</code></pre>
+<pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;Dash&quot;)                       # 90% in the original paper</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the
+## vector has been used.</code></pre>
+<pre><code>## [1] 89.47058</code></pre>
+<pre class="r"><code>FECR(T2 = T2.mean,C2 = C2.mean,method = &quot;Coles&quot;)        # 86% in the original paper</code></pre>
+<pre><code>## [1] 85.47401</code></pre>
+<pre class="r"><code>FECR(T1,T2,method = &quot;Cabaret1&quot;,compute.CI = TRUE)       # 83%(58-99%) in the original paper</code></pre>
+<pre><code>## [1] 82.62164
+## attr(,&quot;CI&quot;)
+##  lower.2.5% upper.97.5% 
+##    61.99437    99.12854</code></pre>
+<pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;Cabaret2&quot;,compute.CI = TRUE) # 84%(51-97%) in the original paper</code></pre>
+<pre><code>## [1] 84.02088
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 60.68754 98.28532</code></pre>
+<pre class="r"><code>FECR(T1,T2,C1,C2,method = &quot;MacIntosh&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## [1] 75.37662
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 63.20409 85.82464</code></pre>
+<p>Our proposed method leads to a somewhat comparable value, albeit significantly lowered. We explain more on this hereafter.</p>
+</div>
+<div id="demonstration-of-the-pit-falls" class="section level2">
+<h2>Demonstration of the pit-falls</h2>
+<div id="the-implicit-arbitrary-pair-matching" class="section level3">
+<h3>The implicit arbitrary pair-matching</h3>
+<p>The toy-example’s values only lead to the reported FECR when inputted in their specific order. Shuffling this order is enough to change the FECR value:</p>
+<pre class="r"><code>set.seed(1000)
+# shuffling T and C
+new.T &lt;- sample(1:length(T1))
+new.C &lt;- sample(1:length(C1))
+
+T1.new &lt;- T1[new.T]
+T2.new &lt;- T2[new.T]
+C1.new &lt;- C1[new.C]
+C2.new &lt;- C2[new.C]
+
+# Recalculating FECRs
+FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Cabaret2&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## [1] 61.27418
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 12.75385 98.14815</code></pre>
+<pre class="r"><code>FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;MacIntosh&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## [1] 75.37662
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 63.23173 85.67652</code></pre>
+<p>Note that shuffling obviously has not change EPG distribution in T and C groups:</p>
+<pre class="r"><code>summary(T1)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     450     500     850    1050    1250    2550</code></pre>
+<pre class="r"><code>summary(T1.new)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     450     500     850    1050    1250    2550</code></pre>
+<pre class="r"><code>summary(C2)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   350.0   450.0   550.0   726.7   900.0  1750.0</code></pre>
+<pre class="r"><code>summary(C2.new)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   350.0   450.0   550.0   726.7   900.0  1750.0</code></pre>
+<p>And neither have methods based on group-averaged EPG</p>
+<pre class="r"><code>FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Dash&quot;)                       # 90% in the original paper</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the
+## vector has been used.</code></pre>
+<pre><code>## [1] 89.47058</code></pre>
+<pre class="r"><code>FECR(T2 = T2.new,C2 = C2.new,method = &quot;Coles&quot;)        # 86% in the original paper</code></pre>
+<pre><code>## Warning in average_if_required(arg.list): a vector of epg has been provided in place of a mean. The arithmetic mean of the
+## vector has been used.</code></pre>
+<pre><code>## [1] 85.47401</code></pre>
+<p>More precisely, here is the bootstrapped distribution of the FECR value itself (not its confidence interval), across several reshuffling:</p>
+<pre class="r"><code>library(ggplot2)
+library(magrittr)
+
+set.seed(9000)
+
+# replicating the shuffling of T and C
+FECR.shuffled &lt;- replicate(
+  n = 1000,
+  simplify = FALSE,
+  expr = {
+    # shuffle
+    new.T &lt;- sample(1:length(T1))
+    new.C &lt;- sample(1:length(C1))
+    
+    T1.new &lt;- T1[new.T]
+    T2.new &lt;- T2[new.T]
+    C1.new &lt;- C1[new.C]
+    C2.new &lt;- C2[new.C]
+
+    #FECR calculations
+    data.frame(
+      method = c(&quot;Cabaret2&quot;,&quot;MacIntosh&quot;),
+      FECR = c(
+        FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Cabaret2&quot;,compute.CI = FALSE),
+        FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;MacIntosh&quot;,compute.CI = FALSE)
+      )
+    )
+  }
+) %&gt;% 
+  do.call(rbind,.)
+FECR.shuffled %&gt;% 
+  ggplot(aes(x = FECR,fill = method))+
+  facet_grid(method~.,scales = &quot;free&quot;)+
+  geom_histogram(binwidth = 2,alpha = 80)+
+  guides(fill = &quot;none&quot;)+
+  scale_x_continuous(limits = c(0,100))+
+  theme_bw()</code></pre>
+<pre><code>## Warning: Removed 4 rows containing missing values (geom_bar).</code></pre>
+<p><img src="first_steps_files/figure-html/pitfall%201%20details-1.png" width="672" /></p>
+<p>We can see that, depending on how individuals in T and C are paired, Cabaret &amp; Berrag’s method leads to a FECR drawn from a bimodal distribution.</p>
+<p>Our method consistently leads to a single FECR value, close to the mean of this distribution:</p>
+<pre class="r"><code>subset(FECR.shuffled,method == &quot;MacIntosh&quot;) %&gt;% .$FECR %&gt;%  unique()</code></pre>
+<pre><code>## [1] 75.37662</code></pre>
+<pre class="r"><code>subset(FECR.shuffled,method == &quot;Cabaret2&quot;) %&gt;% .$FECR %&gt;%  mean()</code></pre>
+<pre><code>## [1] 75.30635</code></pre>
+</div>
+<div id="uneven-sample-sizes" class="section level3">
+<h3>Uneven sample sizes</h3>
+<p>Let’s simulate upon this toy example an uneven sample size between the T and C groups by randomly removing 2 individuals from one, e.g. T.</p>
+<p>Since the <code>"Cabaret2"</code> method relies on a summation across n individuals in both the T and C groups, this requires subsetting the larger group too by randomly removing 2 individuals. This isn’t a requirement for our method, which will keep using all the individuals from C despite T having 2 individuals less.</p>
+<pre class="r"><code>set.seed(9999)
+# removing 2 individuals from T and C
+new.T &lt;- sample(1:length(T1),length(T1) - 2)
+new.C &lt;- sample(1:length(C1),length(C1) - 2)
+
+T1.new &lt;- T1[new.T]
+T2.new &lt;- T2[new.T]
+C1.new &lt;- C1[new.C]
+C2.new &lt;- C2[new.C]
+
+# Recalculating FECRs
+FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Cabaret2&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## [1] 69.59653
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 11.15497 99.47090</code></pre>
+<pre class="r"><code>FECR(T1.new,T2.new,C1,C2,method = &quot;Cabaret2&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## Error in check_if_valid_parameters(arg.list): Some of T1,T2,C1,C2 are not of the same length.</code></pre>
+<pre class="r"><code>FECR(T1.new,T2.new,C1,C2,method = &quot;MacIntosh&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## [1] 79.13679
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 64.90151 91.34628</code></pre>
+<p>Again, if this is replicated many times, FECRs are impacted differently across the two methods:</p>
+<pre class="r"><code>set.seed(777)
+
+# replicating the shuffling of T and C
+FECR.minus.2 &lt;- replicate(
+  n = 1000,
+  simplify = FALSE,
+  expr = {
+    # shuffle
+    new.T &lt;- sample(1:length(T1),length(T1) - 2)
+    new.C &lt;- sample(1:length(C1),length(C1) - 2)
+    
+    T1.new &lt;- T1[new.T]
+    T2.new &lt;- T2[new.T]
+    C1.new &lt;- C1[new.C]
+    C2.new &lt;- C2[new.C]
+    
+    #FECR calculations
+    data.frame(
+      method = c(&quot;Cabaret2&quot;,&quot;MacIntosh&quot;),
+      FECR = c(
+        FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Cabaret2&quot;,compute.CI = FALSE),
+        FECR(T1.new,T2.new,C1,C2,method = &quot;MacIntosh&quot;,compute.CI = FALSE)
+      )
+    )
+  }
+) %&gt;% 
+  do.call(rbind,.)
+FECR.minus.2 %&gt;% 
+  ggplot(aes(x = FECR,fill = method))+
+  facet_grid(method~.,scales = &quot;free&quot;)+
+  geom_histogram(binwidth = 2,alpha = 80)+
+  guides(fill = &quot;none&quot;)+
+  scale_x_continuous(limits = c(0,100))+
+  theme_bw()</code></pre>
+<pre><code>## Warning: Removed 4 rows containing missing values (geom_bar).</code></pre>
+<p><img src="first_steps_files/figure-html/pitfall%202%20details-1.png" width="672" /></p>
+<p>Therefore, on top of using all the data available, our method also leads to more stable FECR values.</p>
+</div>
+<div id="what-about-confidence-intervals" class="section level3">
+<h3>What about confidence intervals?</h3>
+<p>The same processes of reshuffling or removing datapoints can be replicated to calculate the stability of confidence intervals’ boundaries:</p>
+<pre class="r"><code>set.seed(1234)
+
+# replicating the shuffling of T and C
+CI.shuffled &lt;- replicate(
+  n = 100,
+  simplify = FALSE,
+  expr = {
+    # shuffle
+    new.T &lt;- sample(1:length(T1))
+    new.C &lt;- sample(1:length(C1))
+    
+    T1.new &lt;- T1[new.T]
+    T2.new &lt;- T2[new.T]
+    C1.new &lt;- C1[new.C]
+    C2.new &lt;- C2[new.C]
+    Cab &lt;- FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;Cabaret2&quot;,
+                          compute.CI = TRUE,pb = FALSE)
+    Mac &lt;- FECR(T1.new,T2.new,C1.new,C2.new,method = &quot;MacIntosh&quot;,
+                          compute.CI = TRUE,pb = FALSE)
+
+    #FECR calculations
+    data.frame(
+      method = c(&quot;Cabaret2&quot;,&quot;MacIntosh&quot;),
+      FECR = c(Cab,Mac),
+      lower = c(
+        attr(Cab,&quot;CI&quot;)[1],
+        attr(Mac,&quot;CI&quot;)[1]
+      ),
+      upper = c(
+        attr(Cab,&quot;CI&quot;)[2],
+        attr(Mac,&quot;CI&quot;)[2]
+      )
+    )
+  }
+) %&gt;% 
+  do.call(rbind,.) %&gt;% 
+  cbind(rep = factor(rep(1:100,each = 2)),.)
+CI.shuffled %&gt;% 
+  ggplot(aes(method,FECR,colour = method,group = rep))+
+  geom_linerange(aes(ymin = lower,ymax = upper),position = position_dodge(.9))+
+  geom_point(position = position_dodge(.9))+
+  guides(colour = &quot;none&quot;)+
+  theme_bw()</code></pre>
+<p><img src="first_steps_files/figure-html/pitfall%20CI%20details-1.png" width="672" /></p>
+<p>Our proposed method is designed to calculate a FECR value (and its confidence interval) that is unique for a given set of EPG values in T and C groups. The only slight variations observed regarding the boundaries of the confidence interval is attributable to the bootstrap’s own random resampling.</p>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

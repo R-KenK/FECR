@@ -1,4 +1,5 @@
 name: "FECR package"
+output_dir: "."
 navbar:
   title: "FECR package"
   type: inverse
