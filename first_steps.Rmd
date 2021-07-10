@@ -37,11 +37,18 @@ C2 <- rpois(50,90);C2.mean <- mean(C2)
 ```
 ## FECR calculations
 ### When sample size is the same
-From these values, one can calculate FECR values through the `FECR()` function of this `FECR`
-package, specifying a method between `"Kochapakdee"`, `"Dash"`, `"Coles"`, `"Cabaret1"`,
-`"Cabaret2"`.    
-The logical argument `compute.CI` allows for the computation of a confidence interval 
-(95% by default) for individual-based methods (cf. Cabaret & Berrag, 2004)
+The `FECR()` function of this `FECR` package takes vectors of EPG values as arguments `T1`, `T2`,
+`C1`, and `C2`.
+
+From these values, you can specify a method between `"Kochapakdee"`, `"Dash"`, `"Coles"`,
+`"Cabaret1"`, `"Cabaret2"`.
+
+Note that some of these methods do not require all arguments: for these methods, you will need to
+specify what EPG values are inputted through named arguments (e.g. `T2 = your.vector`), otherwise an error
+message will be displayed.
+
+The logical argument `compute.CI` allows for the computation of a confidence interval (95% by
+default) for individual-based methods (cf. Cabaret & Berrag, 2004)
 
 ```{r simple FECR}
 # Calculation of FECR values according to different methods
@@ -307,3 +314,5 @@ CI.shuffled %>%
   guides(colour = "none")+
   theme_bw()
 ```
+
+Our proposed method is designed to calculate a FECR value (and its confidence interval) that is unique for a given set of EPG values in T and C groups. The only slight variations observed regarding the boundaries of the confidence interval is attributable to the bootstrap's own random resampling.
