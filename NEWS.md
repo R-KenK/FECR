@@ -1,3 +1,12 @@
+# FECR 5.0.0
+* Added a new FECR calculation method, "MacIntosh2", compatible with multiple epg value per
+individual.
+* Method "MacIntosh" has therefore been renamed "MacIntosh1"
+* Non-parametric, the method repeats many times the followings:    
+    * randomly sample one epg value per individual
+    * on the randomly sampled epg values, previously introduced method "MacIntosh1" is applied.
+    * the mean FECR value is reported, as well as the confidence interval of choice.
+
 # FECR 4.0.1
 * Added `"pb"` argument to `FECR()` to not display a progress bar
 
