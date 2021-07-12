@@ -20,40 +20,44 @@ FECR(
 )
 }
 \arguments{
-\item{T1}{pre-treatment mean epg (or vector of individual epg) of the treated group. For `method
-  = "MacIntosh2"`, a data.frame containing individual epg values of the treated group before
-  treatment, with one or more value per individual. The data.frame must be in long format (one
-  row per epg value) and include columns:
+\item{T1}{pre-treatment mean epg (or vector of individual epg) of the treated group.\cr
+\cr
+For `method = "MacIntosh2"`, a data.frame containing individual epg values of the treated group
+before treatment, with one or more value per individual. The data.frame must be in long format
+(one row per epg value) and include columns:
 \itemize{
- \item{"id"}{character or factor indicating which individual the epg value is from.}
- \item{"epg"}{numeric, the epg value.}
+ \item{"id": }{character or factor indicating which individual the epg value is from.}
+ \item{"epg": }{numeric, the epg value.}
 }}
 
-\item{T2}{post-treatment mean epg (or vector of individual epg) of the treated group. For `method
-  = "MacIntosh2"`, a data.frame containing individual epg values of the treated group after
-  treatment, with one or more value per individual. The data.frame must be in long format (one
-  row per epg value) and include columns:
+\item{T2}{post-treatment mean epg (or vector of individual epg) of the treated group.\cr
+\cr
+For `method = "MacIntosh2"`, a data.frame containing individual epg values of the treated group
+after treatment, with one or more value per individual. The data.frame must be in long format
+(one row per epg value) and include columns:
 \itemize{
- \item{"id"}{character or factor indicating which individual the epg value is from.}
- \item{"epg"}{numeric, the epg value.}
+ \item{"id": }{character or factor indicating which individual the epg value is from.}
+ \item{"epg": }{numeric, the epg value.}
 }}
 
-\item{C1}{pre-treatment mean epg (or vector of individual epg) of the control group. For `method
-  = "MacIntosh2"`, a data.frame containing individual epg values of the control group before
-  treatment, with one or more value per individual. The data.frame must be in long format (one
-  row per epg value) and include columns:
+\item{C1}{pre-treatment mean epg (or vector of individual epg) of the control group.\cr
+\cr
+For `method = "MacIntosh2"`, a data.frame containing individual epg values of the control group
+before treatment, with one or more value per individual. The data.frame must be in long format
+(one row per epg value) and include columns:
 \itemize{
- \item{"id"}{character or factor indicating which individual the epg value is from.}
- \item{"epg"}{numeric, the epg value.}
+ \item{"id": }{character or factor indicating which individual the epg value is from.}
+ \item{"epg": }{numeric, the epg value.}
 }}
 
-\item{C2}{post-treatment mean epg (or vector of individual epg) of the control group. For `method
-  = "MacIntosh2"`, a data.frame containing individual epg values of the control group after
-  treatment, with one or more value per individual. The data.frame must be in long format (one
-  row per epg value) and include columns:
+\item{C2}{post-treatment mean epg (or vector of individual epg) of the control group.\cr
+\cr
+For `method = "MacIntosh2"`, a data.frame containing individual epg values of the control group
+after treatment, with one or more value per individual. The data.frame must be in long format
+(one row per epg value) and include columns:
 \itemize{
- \item{"id"}{character or factor indicating which individual the epg value is from.}
- \item{"epg"}{numeric, the epg value.}
+ \item{"id": }{character or factor indicating which individual the epg value is from.}
+ \item{"epg": }{numeric, the epg value.}
 }}
 
 \item{method}{method to base the FECR calculation on:
