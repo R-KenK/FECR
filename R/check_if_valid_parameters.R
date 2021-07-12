@@ -72,7 +72,7 @@ check_if_valid_parameters <- function(arg.list) {
              stop("T1,C1 or C2 cannot be zero.")
            }
          },
-         "MacIntosh" = {
+         "MacIntosh1" = {
            if (any(length(T1) == 1,length(T2) == 1,
                    length(C1) == 1,length(C2) == 1)) {
              warning("a single value of epg has been provided in place of an expected vector of individual values.")
@@ -80,6 +80,22 @@ check_if_valid_parameters <- function(arg.list) {
            if (any(length(T1) != length(T2),
                    length(C1) != length(C2))) {
              stop("Either T1 vs T2 or C1 vs C2 is not of the same length.")
+           }
+           if (any(T1 == 0,C1 == 0,C2 == 0)) {
+             stop("T1,C1 or C2 cannot be zero.")
+           }
+         },
+         "MacIntosh2" = {
+           if (!all(is.data.frame(T1),is.data.frame(T2),
+                    is.data.frame(C1),is.data.frame(C2))) {
+             stop("This method requires epg data inputted as data.frames, with column `id` and `epg`.")
+           }
+           if (any(nrow(T1) == 1,nrow(T2) == 1,
+                   nrow(C1) == 1,nrow(C2) == 1)) {
+             warning("a single value of epg has been provided in place of an expected vector of individual values.")
+           }
+           if (!check_ind.presence(T1 = T1,T2 = T2,C1 = C1,C2 = C2)) {
+             stop("Either T1 & T2 or C1 & C2 do not have all individuals between periods 1 and 2.")
            }
            if (any(T1 == 0,C1 == 0,C2 == 0)) {
              stop("T1,C1 or C2 cannot be zero.")

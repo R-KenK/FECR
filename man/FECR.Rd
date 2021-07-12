@@ -10,7 +10,8 @@ FECR(
   T2 = NULL,
   C1 = NULL,
   C2 = NULL,
-  method = c("Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2", "MacIntosh"),
+  method = c("Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2", "MacIntosh1",
+    "MacIntosh2"),
   compute.CI = FALSE,
   percentile = c(0.025, 0.975),
   boot = 2000,
@@ -19,13 +20,41 @@ FECR(
 )
 }
 \arguments{
-\item{T1}{pre-treatment mean epg (or vector of individual epg) of the treated group.}
+\item{T1}{pre-treatment mean epg (or vector of individual epg) of the treated group. For `method
+  = "MacIntosh2"`, a data.frame containing individual epg values of the treated group before
+  treatment, with one or more value per individual. The data.frame must be in long format (one
+  row per epg value) and include columns:
+\itemize{
+ \item{"id"}{character or factor indicating which individual the epg value is from.}
+ \item{"epg"}{numeric, the epg value.}
+}}
 
-\item{T2}{post-treatment mean epg (or vector of individual epg) of the treated group.}
+\item{T2}{post-treatment mean epg (or vector of individual epg) of the treated group. For `method
+  = "MacIntosh2"`, a data.frame containing individual epg values of the treated group after
+  treatment, with one or more value per individual. The data.frame must be in long format (one
+  row per epg value) and include columns:
+\itemize{
+ \item{"id"}{character or factor indicating which individual the epg value is from.}
+ \item{"epg"}{numeric, the epg value.}
+}}
 
-\item{C1}{pre-treatment mean epg (or vector of individual epg) of the control group.}
+\item{C1}{pre-treatment mean epg (or vector of individual epg) of the control group. For `method
+  = "MacIntosh2"`, a data.frame containing individual epg values of the control group before
+  treatment, with one or more value per individual. The data.frame must be in long format (one
+  row per epg value) and include columns:
+\itemize{
+ \item{"id"}{character or factor indicating which individual the epg value is from.}
+ \item{"epg"}{numeric, the epg value.}
+}}
 
-\item{C2}{post-treatment mean epg (or vector of individual epg) of the control group.}
+\item{C2}{post-treatment mean epg (or vector of individual epg) of the control group. For `method
+  = "MacIntosh2"`, a data.frame containing individual epg values of the control group after
+  treatment, with one or more value per individual. The data.frame must be in long format (one
+  row per epg value) and include columns:
+\itemize{
+ \item{"id"}{character or factor indicating which individual the epg value is from.}
+ \item{"epg"}{numeric, the epg value.}
+}}
 
 \item{method}{method to base the FECR calculation on:
 \itemize{
@@ -37,8 +66,10 @@ FECR(
  \item{"Cabaret1"}{the mean ratio of individual pre- and post-treatment epg of the treated group}
  \item{"Cabaret2"}{the mean ratio of pre- and post-treatment epg of the treated group, correcting
  for the individual epg in the control group.}
- \item{"MacIntosh"}{Similar to Cabaret2, but update: now run for all pairs of Ts and Cs, to not
+ \item{"MacIntosh1"}{Similar to Cabaret2, but update: now run for all pairs of Ts and Cs, to not
  require Ts and Cs to have the same length.}
+ \item{"MacIntosh2"}{Similar to MacIntosh1, but update: now compatible with multiple epg values
+ per individuals. Does not require even sample size across T1,T2,C1, or C2).}
 }}
 
 \item{compute.CI}{logical. Should confidence interval be calculated?}
@@ -76,13 +107,24 @@ FECR(T2 = T2,C2 = C2,method = "Coles")
 FECR(T1,T2,method = "Cabaret1")
 FECR(T1,T2,C1,C2,method = "Cabaret2")
 FECR(T1,T2,C1,C2,method = "Cabaret2",compute.CI = TRUE)
-FECR(T1,T2,C1,C2,method = "MacIntosh",compute.CI = TRUE)
+FECR(T1,T2,C1,C2,method = "MacIntosh1",compute.CI = TRUE)
 
 T1 <- rpois(60,100);T1.mean<- mean(T1)
 T2 <- rpois(60,10);T2.mean<- mean(T2)
 C1 <- rpois(50,100);C1.mean<- mean(C1)
 C2 <- rpois(50,90);C2.mean<- mean(C2)
 
-FECR(T1,T2,C1,C2,method = "MacIntosh")
-FECR(T1,T2,C1,C2,method = "MacIntosh",compute.CI = TRUE)
+FECR(T1,T2,C1,C2,method = "MacIntosh1")
+FECR(T1,T2,C1,C2,method = "MacIntosh1",compute.CI = TRUE)
+
+T1 <- data.frame(id = rep(letters[9:18],each = 5),
+                 epg = do.call(c,lapply(1:10,\(x) rpois(5,65))))
+T2 <- data.frame(id = rep(letters[9:18],each = 4),
+                 epg = do.call(c,lapply(1:10,\(x) rpois(4,15))))
+C1 <- data.frame(id = rep(letters[1:8],each = 6),
+                 epg = do.call(c,lapply(1:8,\(x) rpois(6,70))))
+C2 <- data.frame(id = rep(letters[1:8],each = 7),
+                 epg = do.call(c,lapply(1:8,\(x) rpois(7,65))))
+                 
+FECR(T1,T2,C1,C2,method = "MacIntosh2",boot = 100)              
 }

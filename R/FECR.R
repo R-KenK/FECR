@@ -1,10 +1,38 @@
 #' Fecal egg count reduction
 #' Calculate the FECR according to several methods described (cf. Cabaret & Berrag (2004))
 #'
-#' @param T1 pre-treatment mean epg (or vector of individual epg) of the treated group.
-#' @param T2 post-treatment mean epg (or vector of individual epg) of the treated group.
-#' @param C1 pre-treatment mean epg (or vector of individual epg) of the control group.
-#' @param C2 post-treatment mean epg (or vector of individual epg) of the control group.
+#' @param T1 pre-treatment mean epg (or vector of individual epg) of the treated group. For `method
+#'   = "MacIntosh2"`, a data.frame containing individual epg values of the treated group before
+#'   treatment, with one or more value per individual. The data.frame must be in long format (one
+#'   row per epg value) and include columns:
+#' \itemize{
+#'  \item{"id"}{character or factor indicating which individual the epg value is from.}
+#'  \item{"epg"}{numeric, the epg value.}
+#' }
+#' @param T2 post-treatment mean epg (or vector of individual epg) of the treated group. For `method
+#'   = "MacIntosh2"`, a data.frame containing individual epg values of the treated group after
+#'   treatment, with one or more value per individual. The data.frame must be in long format (one
+#'   row per epg value) and include columns:
+#' \itemize{
+#'  \item{"id"}{character or factor indicating which individual the epg value is from.}
+#'  \item{"epg"}{numeric, the epg value.}
+#' }
+#' @param C1 pre-treatment mean epg (or vector of individual epg) of the control group. For `method
+#'   = "MacIntosh2"`, a data.frame containing individual epg values of the control group before
+#'   treatment, with one or more value per individual. The data.frame must be in long format (one
+#'   row per epg value) and include columns:
+#' \itemize{
+#'  \item{"id"}{character or factor indicating which individual the epg value is from.}
+#'  \item{"epg"}{numeric, the epg value.}
+#' }
+#' @param C2 post-treatment mean epg (or vector of individual epg) of the control group. For `method
+#'   = "MacIntosh2"`, a data.frame containing individual epg values of the control group after
+#'   treatment, with one or more value per individual. The data.frame must be in long format (one
+#'   row per epg value) and include columns:
+#' \itemize{
+#'  \item{"id"}{character or factor indicating which individual the epg value is from.}
+#'  \item{"epg"}{numeric, the epg value.}
+#' }
 #' @param method method to base the FECR calculation on:
 #' \itemize{
 #'  \item{"Kochapakdee"}{the ratio of pre- and post-treatment epg arithmetic means of the treated
@@ -15,8 +43,10 @@
 #'  \item{"Cabaret1"}{the mean ratio of individual pre- and post-treatment epg of the treated group}
 #'  \item{"Cabaret2"}{the mean ratio of pre- and post-treatment epg of the treated group, correcting
 #'  for the individual epg in the control group.}
-#'  \item{"MacIntosh"}{Similar to Cabaret2, but update: now run for all pairs of Ts and Cs, to not
+#'  \item{"MacIntosh1"}{Similar to Cabaret2, but update: now run for all pairs of Ts and Cs, to not
 #'  require Ts and Cs to have the same length.}
+#'  \item{"MacIntosh2"}{Similar to MacIntosh1, but update: now compatible with multiple epg values
+#'  per individuals. Does not require even sample size across T1,T2,C1, or C2).}
 #' }
 #' @param compute.CI logical. Should confidence interval be calculated? 
 #' @param percentile quantiles to use if compute.CI is TRUE, unused otherwise.
@@ -47,18 +77,30 @@
 #' FECR(T1,T2,method = "Cabaret1")
 #' FECR(T1,T2,C1,C2,method = "Cabaret2")
 #' FECR(T1,T2,C1,C2,method = "Cabaret2",compute.CI = TRUE)
-#' FECR(T1,T2,C1,C2,method = "MacIntosh",compute.CI = TRUE)
+#' FECR(T1,T2,C1,C2,method = "MacIntosh1",compute.CI = TRUE)
 #' 
 #' T1 <- rpois(60,100);T1.mean<- mean(T1)
 #' T2 <- rpois(60,10);T2.mean<- mean(T2)
 #' C1 <- rpois(50,100);C1.mean<- mean(C1)
 #' C2 <- rpois(50,90);C2.mean<- mean(C2)
 #' 
-#' FECR(T1,T2,C1,C2,method = "MacIntosh")
-#' FECR(T1,T2,C1,C2,method = "MacIntosh",compute.CI = TRUE)
-
+#' FECR(T1,T2,C1,C2,method = "MacIntosh1")
+#' FECR(T1,T2,C1,C2,method = "MacIntosh1",compute.CI = TRUE)
+#' 
+#' T1 <- data.frame(id = rep(letters[9:18],each = 5),
+#'                  epg = do.call(c,lapply(1:10,\(x) rpois(5,65))))
+#' T2 <- data.frame(id = rep(letters[9:18],each = 4),
+#'                  epg = do.call(c,lapply(1:10,\(x) rpois(4,15))))
+#' C1 <- data.frame(id = rep(letters[1:8],each = 6),
+#'                  epg = do.call(c,lapply(1:8,\(x) rpois(6,70))))
+#' C2 <- data.frame(id = rep(letters[1:8],each = 7),
+#'                  epg = do.call(c,lapply(1:8,\(x) rpois(7,65))))
+#'                  
+#' FECR(T1,T2,C1,C2,method = "MacIntosh2",boot = 100)              
 FECR <- function(T1 = NULL,T2 = NULL,C1 = NULL,C2 = NULL,
-                 method = c("Kochapakdee","Dash","Coles","Cabaret1","Cabaret2","MacIntosh"),
+                 method = c("Kochapakdee","Dash","Coles",
+                            "Cabaret1","Cabaret2",
+                            "MacIntosh1","MacIntosh2"),
                  compute.CI = FALSE,percentile = c(0.025,0.975),boot = 2000,
                  boot.original.data = FALSE,pb = TRUE) {
   method <- match.arg(method)
@@ -79,9 +121,11 @@ FECR <- function(T1 = NULL,T2 = NULL,C1 = NULL,C2 = NULL,
                                     boot = boot,boot.original.data = boot.original.data,pb = pb),
          "Cabaret2" = FECR_Cabaret2(T1,T2,C1,C2,compute.CI = compute.CI,percentile = percentile,
                                     boot = boot,boot.original.data = boot.original.data,pb = pb),
-         "MacIntosh" = FECR_MacIntosh_Keuk(T1,T2,C1,C2,compute.CI = compute.CI,
-                                           percentile = percentile,boot = boot,
-                                           boot.original.data = boot.original.data,pb = pb)
+         "MacIntosh1" = FECR_MacIntosh_Keuk1(T1,T2,C1,C2,compute.CI = compute.CI,
+                                            percentile = percentile,boot = boot,
+                                            boot.original.data = boot.original.data,pb = pb),
+         "MacIntosh2" = FECR_MacIntosh_Keuk2(T1,T2,C1,C2,percentile = percentile,
+                                             boot = boot,pb = pb)
   )
 }
 
@@ -304,7 +348,7 @@ MacIntosh_Keuk_fun <- function(T.all.pairs,C.all.pairs) {
 #'
 #' @return the FECR with this method, with or without its bootstrapped confidence interval
 #' @noRd
-FECR_MacIntosh_Keuk <- function(T1,T2,C1,C2,
+FECR_MacIntosh_Keuk1 <- function(T1,T2,C1,C2,
                           compute.CI = FALSE,
                           percentile = c(0.025,0.975),
                           boot = 2000,
@@ -357,4 +401,65 @@ FECR_MacIntosh_Keuk <- function(T1,T2,C1,C2,
     )
   }
   FECR
+}
+
+#' Title
+#'
+#' @param T1 a data.frame containing individual epg values of the treated group before treatment,
+#'   with one or more value per individual. The data.frame must be in long format (one row per epg
+#'   value) and include columns:
+#' \itemize{
+#'  \item{"id"}{character or factor indicating which individual the epg value is from.}
+#'  \item{"epg"}{numeric, the epg value.}
+#' }
+#' @param T2 a data.frame containing individual epg values of the treated group after treatment,
+#'   with one or more value per individual. The data.frame must be in long format (one row per epg
+#'   value) and include columns:
+#' \itemize{
+#'  \item{"id"}{character or factor indicating which individual the epg value is from.}
+#'  \item{"epg"}{numeric, the epg value.}
+#' }
+#' @param C1 a data.frame containing individual epg values of the control group before treatment,
+#'   with one or more value per individual. The data.frame must be in long format (one row per epg
+#'   value) and include columns:
+#' \itemize{
+#'  \item{"id"}{character or factor indicating which individual the epg value is from.}
+#'  \item{"epg"}{numeric, the epg value.}
+#' }
+#' @param C2 a data.frame containing individual epg values of the control group after treatment,
+#'   with one or more value per individual. The data.frame must be in long format (one row per epg
+#'   value) and include columns:
+#' \itemize{
+#'  \item{"id"}{character or factor indicating which individual the epg value is from.}
+#'  \item{"epg"}{numeric, the epg value.}
+#' }
+#' @param percentile 
+#' @param boot 
+#' @param boot.original.data 
+#' @param pb 
+#'
+#' @return
+#' @noRd
+FECR_MacIntosh_Keuk2 <- function(T1,T2,C1,C2,
+                                 percentile = c(0.025,0.975),
+                                 boot = 2000,
+                                 boot.original.data = FALSE,pb = TRUE) {
+  
+  epg.dt <- rbind_epgs(T1,T2,C1,C2)
+  
+  if (pb) {Xapply <- pbapply::pbsapply} else {Xapply <- sapply}
+  bootstrap <- 
+    Xapply(
+      1:boot,
+      function(r) {
+        epg.dt %>% 
+          sample_per_id() %>% 
+          FECR_MacIntosh_Keuk1_from_sample()
+      }
+    )
+  ans <- mean(bootstrap)
+  # attr(ans,"bootstrap") <- bootstrap  # in case this package switches to S3 objects
+  attr(ans,"CI") <- quantile(bootstrap,percentile)
+  # class(ans) <- "FECR"
+  ans
 }

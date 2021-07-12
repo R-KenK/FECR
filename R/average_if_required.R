@@ -44,6 +44,7 @@ average_if_required <- function(arg.list) {
          },
          "Cabaret1" = ,
          "Cabaret2" = ,
-         "MacIntosh" = list(T1 = T1,T2 = T2,C1 = C1,C2 = C2,method = method)
+         "MacIntosh1" = ,
+         "MacIntosh2" = list(T1 = T1,T2 = T2,C1 = C1,C2 = C2,method = method)
     )
 }
