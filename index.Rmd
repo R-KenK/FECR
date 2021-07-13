@@ -1,7 +1,6 @@
 ---
 title: "FECR - Updated Fecal Egg Count Reduction tests"
-author: "Kenneth Keuk"
-date: "08/07/2021"
+author: "Package developer: Kenneth Keuk"
 output: 
   html_document: 
     toc: yes
