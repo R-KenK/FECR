@@ -13,10 +13,11 @@ navbar:
     - text: "Improvements from Cabarret & Berrag (2004)"
       icon: fa-check-circle
       href: our_improvements.html
+    
+  right:
     - text: "FECR repository"
       icon: fa-github-square
       href: https://github.com/R-KenK/FECR
-  right:
-    - text: "Github"
+    - text: "Github profile"
       icon: fa-github
       href: https://github.com/R-KenK/
