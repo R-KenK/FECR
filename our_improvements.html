@@ -623,6 +623,93 @@ CI.shuffled %&gt;%
 <p>Our proposed method is designed to calculate a FECR value (and its confidence interval) that is unique for a given set of EPG values in T and C groups. The only slight variations observed regarding the boundaries of the confidence interval is attributable to the bootstrap’s own random resampling.</p>
 </div>
 </div>
+<div id="what-about-multiple-values-per-individual-and-intra-individual-variability" class="section level2">
+<h2>What about multiple values per individual and intra-individual variability?</h2>
+<p>None of the methods mentioned so far nor our fix of the Cabaret2 method handle multiple samples per individual. In this FECR package, we propose a non-parametric approach to include individual variability in the FECRs calculation.</p>
+<div id="simulating-data" class="section level3">
+<h3>Simulating data</h3>
+<p>Here we simulate values for individuals of groups T and C, with different sample size per individual, group and period.</p>
+<pre class="r"><code>library(data.table,quietly = TRUE)
+library(truncnorm)
+
+set.seed(2001)
+# custom simulating function:
+sim_epg_data &lt;- function(n,mean,runif.boundaries) {
+  lapply(
+    1:n,
+    function(x) {
+      # runif determine a random sample size per individual, and set the epg&#39;s sd to twice this
+      # value
+      runif(1,runif.boundaries[1],runif.boundaries[2]) %&gt;% 
+        {rtruncnorm(.,mean = mean,sd = . * 2,a = 0)} %&gt;% 
+        round %&gt;% as.integer
+    }
+  )
+}
+
+# generating the data (generate list-column and unnest them for code brievity)
+T1 &lt;- data.table(id = letters[9:18],
+                 epg = sim_epg_data(n = 10,mean = 65,c(3,10)))[,.(epg = epg[[1]]),by = id]
+T2 &lt;- data.table(id = letters[9:18],
+                 epg = sim_epg_data(n = 10,mean = 20,c(6,8)))[,.(epg = epg[[1]]),by = id]
+C1 &lt;- data.table(id = letters[1:8],
+                 epg = sim_epg_data(n = 8,mean = 70,c(6,12)))[,.(epg = epg[[1]]),by = id]
+C2 &lt;- data.table(id = letters[1:8],
+                 epg = sim_epg_data(n = 8,mean = 65,c(1,12)))[,.(epg = epg[[1]]),by = id]</code></pre>
+<p>Note that ultimately, T1,T2,C1, and C2 now are data.frames (long format) containing column id (referring to the individual identity) and epg (the value per sample). In the future, we will implement ways for the user to specify the column names.</p>
+<pre class="r"><code>rbind(cbind(group = &quot;Treated&quot;,gp = &quot;T1&quot;,T1),cbind(group = &quot;Treated&quot;,gp = &quot;T2&quot;,T2),
+      cbind(group = &quot;Control&quot;,gp = &quot;C1&quot;,C1),cbind(group = &quot;Control&quot;,gp = &quot;C2&quot;,C2)) %&gt;% 
+  ggplot(aes(gp,epg,colour = id,fill = id))+
+  facet_grid(.~group,scales = &quot;free_x&quot;)+
+  geom_boxplot(alpha = 0.3)+
+  geom_jitter(alpha = .2)+
+  guides(colour = &quot;none&quot;,fill = &quot;none&quot;)+
+  xlab(&quot;Group per period (before = 1, after = 2)&quot;)+
+  theme_minimal()</code></pre>
+<p><img src="our_improvements_files/figure-html/data%20vis-1.png" width="672" /></p>
+</div>
+<div id="fecr-values" class="section level3">
+<h3>FECR values</h3>
+<p>With such a dataset, one needs first to average epg values per individual (and possibly by group-period) before using any of the previously mentioned:</p>
+<pre class="r"><code>rbind(cbind(group = &quot;Treated&quot;,gp = &quot;T1&quot;,T1),cbind(group = &quot;Treated&quot;,gp = &quot;T2&quot;,T2),
+      cbind(group = &quot;Control&quot;,gp = &quot;C1&quot;,C1),cbind(group = &quot;Control&quot;,gp = &quot;C2&quot;,C2)) %&gt;% 
+  .[,.(epg = mean(epg),l = quantile(epg,.025),u = quantile(epg,.975)),by = .(id,group,gp)] %&gt;% 
+  ggplot(aes(gp,epg,colour = id,fill = id))+
+  facet_grid(.~group,scales = &quot;free_x&quot;)+
+  geom_line(aes(group = id),alpha = 0.2,colour = &quot;grey50&quot;,position = position_dodge(0.2))+
+  geom_linerange(aes(ymin = l,ymax = u),position = position_dodge(0.2))+
+  geom_point(alpha = .5,position = position_dodge(0.2))+
+  guides(colour = &quot;none&quot;,fill = &quot;none&quot;)+
+  xlab(&quot;Group per period (before = 1, after = 2)&quot;)+
+  theme_minimal()</code></pre>
+<p><img src="our_improvements_files/figure-html/data%20sim%20FECR-1.png" width="672" /></p>
+<pre class="r"><code>T1.avg &lt;- T1[,.(epg = mean(epg)),by = id]$epg;T2.avg &lt;- T2[,.(epg = mean(epg)),by = id]$epg
+C1.avg &lt;- C1[,.(epg = mean(epg)),by = id]$epg;C2.avg &lt;- C2[,.(epg = mean(epg)),by = id]$epg
+
+# returns an error because of the uneven sample size
+FECR(T1.avg,T2.avg,C1.avg,C2.avg,method = &quot;Cabaret2&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## Error in check_if_valid_parameters(arg.list): Some of T1,T2,C1,C2 are not of the same length.</code></pre>
+<pre class="r"><code>FECR(T1.avg,T2.avg,C1.avg,C2.avg,method = &quot;MacIntosh1&quot;,compute.CI = TRUE)</code></pre>
+<pre><code>## [1] 60.1642
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 58.69651 61.46585</code></pre>
+<pre class="r"><code># expected FECR given the simulated epg means in the treated group:
+1 - (20 / 65) /  (65 / 70)</code></pre>
+<pre><code>## [1] 0.6686391</code></pre>
+<p>We can see that, in this simulation, the FECR value after averaging per individual is lower and less variable than what could be expected by looking at the raw data and inputted mean epgs. Also, note that the confidence interval being so narrow, it does not contain the value 66% obtained through the inputted means.</p>
+<p>In comparison, this is how our last method compares:</p>
+<pre class="r"><code>FECR(T1,T2,C1,C2,boot = 500,method = &quot;MacIntosh2&quot;)</code></pre>
+<pre><code>## [1] 56.00778
+## attr(,&quot;CI&quot;)
+##     2.5%    97.5% 
+## 34.72859 71.85496</code></pre>
+<pre class="r"><code># expected FECR given the simulated epg means in the treated group:
+1 - (20 / 65) /  (65 / 70)</code></pre>
+<pre><code>## [1] 0.6686391</code></pre>
+<p>This last method, while returning a mean FECR lower than the one from the previous method, correctly reflects how variable individual epg data are in the dataset, by reprensenting the ditribution of FECR value one could have obtained given the individual variability. Note that this time, the “true” value 66% calculated through the group mean epgs is within the 95% interval.</p>
+</div>
+</div>
 
 
 

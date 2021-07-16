@@ -248,3 +248,100 @@ Our proposed method is designed to calculate a FECR value (and its confidence in
 unique for a given set of EPG values in T and C groups. The only slight variations observed
 regarding the boundaries of the confidence interval is attributable to the bootstrap's own random
 resampling.
+
+## What about multiple values per individual and intra-individual variability?
+None of the methods mentioned so far nor our fix of the Cabaret2 method handle multiple samples per
+individual. In this FECR package, we propose a non-parametric approach to include individual
+variability in the FECRs calculation.
+
+### Simulating data
+Here we simulate values for individuals of groups T and C, with different sample size per individual, group and period.
+```{r data sim Mac2}
+library(data.table,quietly = TRUE)
+library(truncnorm)
+
+set.seed(2001)
+# custom simulating function:
+sim_epg_data <- function(n,mean,runif.boundaries) {
+  lapply(
+    1:n,
+    function(x) {
+      # runif determine a random sample size per individual, and set the epg's sd to twice this
+      # value
+      runif(1,runif.boundaries[1],runif.boundaries[2]) %>% 
+        {rtruncnorm(.,mean = mean,sd = . * 2,a = 0)} %>% 
+        round %>% as.integer
+    }
+  )
+}
+
+# generating the data (generate list-column and unnest them for code brievity)
+T1 <- data.table(id = letters[9:18],
+                 epg = sim_epg_data(n = 10,mean = 65,c(3,10)))[,.(epg = epg[[1]]),by = id]
+T2 <- data.table(id = letters[9:18],
+                 epg = sim_epg_data(n = 10,mean = 20,c(6,8)))[,.(epg = epg[[1]]),by = id]
+C1 <- data.table(id = letters[1:8],
+                 epg = sim_epg_data(n = 8,mean = 70,c(6,12)))[,.(epg = epg[[1]]),by = id]
+C2 <- data.table(id = letters[1:8],
+                 epg = sim_epg_data(n = 8,mean = 65,c(1,12)))[,.(epg = epg[[1]]),by = id]
+
+```
+Note that ultimately, T1,T2,C1, and C2 now are data.frames (long format) containing column id (referring to the individual
+identity) and epg (the value per sample). In the future, we will implement ways for the user to specify the column names.
+
+```{r data vis}
+rbind(cbind(group = "Treated",gp = "T1",T1),cbind(group = "Treated",gp = "T2",T2),
+      cbind(group = "Control",gp = "C1",C1),cbind(group = "Control",gp = "C2",C2)) %>% 
+  ggplot(aes(gp,epg,colour = id,fill = id))+
+  facet_grid(.~group,scales = "free_x")+
+  geom_boxplot(alpha = 0.3)+
+  geom_jitter(alpha = .2)+
+  guides(colour = "none",fill = "none")+
+  xlab("Group per period (before = 1, after = 2)")+
+  theme_minimal()
+
+```
+
+### FECR values 
+With such a dataset, one needs first to average epg values per individual (and possibly by
+group-period) before using any of the previously mentioned:
+```{r data sim FECR,error=TRUE}
+rbind(cbind(group = "Treated",gp = "T1",T1),cbind(group = "Treated",gp = "T2",T2),
+      cbind(group = "Control",gp = "C1",C1),cbind(group = "Control",gp = "C2",C2)) %>% 
+  .[,.(epg = mean(epg),l = quantile(epg,.025),u = quantile(epg,.975)),by = .(id,group,gp)] %>% 
+  ggplot(aes(gp,epg,colour = id,fill = id))+
+  facet_grid(.~group,scales = "free_x")+
+  geom_line(aes(group = id),alpha = 0.2,colour = "grey50",position = position_dodge(0.2))+
+  geom_linerange(aes(ymin = l,ymax = u),position = position_dodge(0.2))+
+  geom_point(alpha = .5,position = position_dodge(0.2))+
+  guides(colour = "none",fill = "none")+
+  xlab("Group per period (before = 1, after = 2)")+
+  theme_minimal()
+
+T1.avg <- T1[,.(epg = mean(epg)),by = id]$epg;T2.avg <- T2[,.(epg = mean(epg)),by = id]$epg
+C1.avg <- C1[,.(epg = mean(epg)),by = id]$epg;C2.avg <- C2[,.(epg = mean(epg)),by = id]$epg
+
+# returns an error because of the uneven sample size
+FECR(T1.avg,T2.avg,C1.avg,C2.avg,method = "Cabaret2",compute.CI = TRUE)
+
+FECR(T1.avg,T2.avg,C1.avg,C2.avg,method = "MacIntosh1",compute.CI = TRUE)
+
+# expected FECR given the simulated epg means in the treated group:
+1 - (20 / 65) /  (65 / 70)
+```
+We can see that, in this simulation, the FECR value after averaging per individual is lower and less
+variable than what could be expected by looking at the raw data and inputted mean epgs. Also, note
+that the confidence interval being so narrow, it does not contain the value 66% obtained through the
+inputted means.
+  
+In comparison, this is how our last method compares:
+```{r data FECR Mac2}
+FECR(T1,T2,C1,C2,boot = 500,method = "MacIntosh2")
+
+# expected FECR given the simulated epg means in the treated group:
+1 - (20 / 65) /  (65 / 70)
+```
+This last method, while returning a mean FECR lower than the one from the previous method, correctly
+reflects how variable individual epg data are in the dataset, by reprensenting the ditribution of
+FECR value one could have obtained given the individual variability. Note that this time, the "true"
+value 66% calculated through the group mean epgs is within the 95% interval.
