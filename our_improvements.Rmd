@@ -249,7 +249,7 @@ unique for a given set of EPG values in T and C groups. The only slight variatio
 regarding the boundaries of the confidence interval is attributable to the bootstrap's own random
 resampling.
 
-## What about multiple values per individual and intra-individual variability?
+## What about multiple values per individual?
 None of the methods mentioned so far nor our fix of the Cabaret2 method handle multiple samples per
 individual. In this FECR package, we propose a non-parametric approach to include individual
 variability in the FECRs calculation.
