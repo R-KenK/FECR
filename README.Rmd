@@ -1,6 +1,6 @@
 ---
 title: "FECR - Updated Fecal Egg Count Reduction tests"
-output: github_document
+output: md_document
 ---
 
 FECR is an R package designed to implement and update several Fecal Egg Count Reduction Test methods.

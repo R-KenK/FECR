@@ -1,0 +1,85 @@
+---
+title: "FECR - Use examples"
+output: 
+  html_document: 
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+In this page we show of to perform FECR tests - Fecal Egg Count Reduction tests - from individual
+values of EPG: egg per gram of feces/fecal sediment.   
+
+Implemented methods refer to Cabaret & Berrag (2004), as well as our method that improve their
+proposed best approach.    
+
+We demonstrate the use of these methods on simulated data, as well as the toy example presented in 
+this reference article.
+
+# Use example on simulated data
+## EPG simulation
+We simulate EPG values (one per individual) by drawing from poisson distributions as follow:
+
+```{r random init}
+library(FECR)
+
+set.seed(42)
+
+# Generate random EPG values, in the simple case of equal sample size
+T1 <- rpois(50,100);T1.mean <- mean(T1)
+T2 <- rpois(50,10);T2.mean <- mean(T2)
+C1 <- rpois(50,100);C1.mean <- mean(C1)
+C2 <- rpois(50,90);C2.mean <- mean(C2)
+```
+## FECR calculations
+### When sample size is the same
+The `FECR()` function of this `FECR` package takes vectors of EPG values as arguments `T1`, `T2`,
+`C1`, and `C2`.
+
+From these values, you can specify a method between `"Kochapakdee"`, `"Dash"`, `"Coles"`,
+`"Cabaret1"`, `"Cabaret2"`.
+
+Note that some of these methods do not require all arguments: for these methods, you will need to
+specify what EPG values are inputted through named arguments (e.g. `T2 = your.vector`), otherwise an error
+message will be displayed.
+
+The logical argument `compute.CI` allows for the computation of a confidence interval (95% by
+default) for individual-based methods (cf. Cabaret & Berrag, 2004)
+
+```{r simple FECR}
+# Calculation of FECR values according to different methods
+FECR(T1.mean,T2.mean,method = "Kochapakdee")
+FECR(T1,T2,C1,C2,method = "Dash")
+FECR(T2 = T2.mean,C2 = C2.mean,method = "Coles")
+FECR(T2 = T2,C2 = C2,method = "Coles")
+FECR(T1,T2,method = "Cabaret1")
+FECR(T1,T2,C1,C2,method = "Cabaret2")
+FECR(T1,T2,C1,C2,method = "Cabaret2",compute.CI = TRUE)
+FECR(T1,T2,C1,C2,method = "MacIntosh1",compute.CI = TRUE)
+```
+### When sample size is uneven
+The last included method, `"MacIntosh1"`, is an improvement of the `"Cabaret2"` that:    
+
+*  depends on the arbitrary pair-matching of individuals in the control (C) and test (T) groups
+*  cannot be applied to unequal sample-sizes without arbitrarily subset the larger group
+    
+```{r unequal samp FECR, error=TRUE}
+# Generate random EPG values, in the case of unequal sample size
+T1 <- rpois(60,100);T1.mean<- mean(T1)
+T2 <- rpois(60,10);T2.mean<- mean(T2)
+C1 <- rpois(50,100);C1.mean<- mean(C1)
+C2 <- rpois(50,90);C2.mean<- mean(C2)
+
+# Calculation of FECR values according to our sample-size unsensitive method
+FECR(T1,T2,C1,C2,method = "Cabaret2",compute.CI = TRUE)
+FECR(T1,T2,C1,C2,method = "MacIntosh1")
+FECR(T1,T2,C1,C2,method = "MacIntosh1",compute.CI = TRUE)
+
+```
+
+The different aspects of this improvement are discussed further with demonstrations and examples
+[here](our_improvements.html).

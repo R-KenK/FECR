@@ -1,0 +1,18 @@
+FECR is an R package designed to implement and update several Fecal Egg
+Count Reduction Test methods.
+
+## Installation
+
+To install this package, you can rely on the `devtools` or `renv`
+packages as follow:
+
+    # with devtools installed:
+    devtools::install_github("R-KenK/FECR")
+
+    # with renv installed:
+    renv::install("R-KenK/FECR")
+
+This website is currently in construction, and the package itself is
+still evolving pretty quickly.
+
+Stay tuned for more!
