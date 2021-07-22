@@ -12,7 +12,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/sandstone/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FECR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">5.0.0</span>
       </span>
     </div>
 
@@ -85,7 +85,22 @@
   </a>
 </li>
 <li>
+  <a href="../articles/FECR.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/our_improvements.html">Why improve the method from Cabaret &amp; Berrag (2004)?</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -136,7 +151,7 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>quick_sample</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>20</span>,<span class='fl'>5</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1]  2 16  6  3  3</div><div class='input'><span class='co'># microbenchmark::microbenchmark(</span>
+</div><div class='output co'>#&gt; [1] 12 15 19 16  6</div><div class='input'><span class='co'># microbenchmark::microbenchmark(</span>
 <span class='co'>#   runif = {(1:20)[ceiling(runif(5,0,20))]},</span>
 <span class='co'>#   quick_sample = quick_sample(1:20,5),</span>
 <span class='co'>#   sample = sample(1:20,5,replace = TRUE),</span>

@@ -13,7 +13,7 @@ Calculate the FECR according to several methods described (cf. Cabaret &amp; Ber
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/sandstone/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -75,7 +75,7 @@ Calculate the FECR according to several methods described (cf. Cabaret &amp;amp;
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FECR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">4.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">5.0.0</span>
       </span>
     </div>
 
@@ -88,7 +88,22 @@ Calculate the FECR according to several methods described (cf. Cabaret &amp;amp;
   </a>
 </li>
 <li>
+  <a href="../articles/FECR.html">Get started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/our_improvements.html">Why improve the method from Cabaret &amp; Berrag (2004)?</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -125,7 +140,8 @@ Calculate the FECR according to several methods described (cf. Cabaret &amp; Ber
   T2 <span class='op'>=</span> <span class='cn'>NULL</span>,
   C1 <span class='op'>=</span> <span class='cn'>NULL</span>,
   C2 <span class='op'>=</span> <span class='cn'>NULL</span>,
-  method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Kochapakdee"</span>, <span class='st'>"Dash"</span>, <span class='st'>"Coles"</span>, <span class='st'>"Cabaret1"</span>, <span class='st'>"Cabaret2"</span>, <span class='st'>"MacIntosh"</span><span class='op'>)</span>,
+  method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Kochapakdee"</span>, <span class='st'>"Dash"</span>, <span class='st'>"Coles"</span>, <span class='st'>"Cabaret1"</span>, <span class='st'>"Cabaret2"</span>, <span class='st'>"MacIntosh1"</span>,
+    <span class='st'>"MacIntosh2"</span><span class='op'>)</span>,
   compute.CI <span class='op'>=</span> <span class='cn'>FALSE</span>,
   percentile <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.025</span>, <span class='fl'>0.975</span><span class='op'>)</span>,
   boot <span class='op'>=</span> <span class='fl'>2000</span>,
@@ -138,19 +154,47 @@ Calculate the FECR according to several methods described (cf. Cabaret &amp; Ber
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>T1</th>
-      <td><p>pre-treatment mean epg (or vector of individual epg) of the treated group.</p></td>
+      <td><p>pre-treatment mean epg (or vector of individual epg) of the treated group.<br />
+<br />
+For `method = "MacIntosh2"`, a data.frame containing individual epg values of the treated group
+before treatment, with one or more value per individual. The data.frame must be in long format
+(one row per epg value) and include columns:</p><ul>
+<li><p>"id": character or factor indicating which individual the epg value is from.</p></li>
+<li><p>"epg": numeric, the epg value.</p></li>
+</ul></td>
     </tr>
     <tr>
       <th>T2</th>
-      <td><p>post-treatment mean epg (or vector of individual epg) of the treated group.</p></td>
+      <td><p>post-treatment mean epg (or vector of individual epg) of the treated group.<br />
+<br />
+For `method = "MacIntosh2"`, a data.frame containing individual epg values of the treated group
+after treatment, with one or more value per individual. The data.frame must be in long format
+(one row per epg value) and include columns:</p><ul>
+<li><p>"id": character or factor indicating which individual the epg value is from.</p></li>
+<li><p>"epg": numeric, the epg value.</p></li>
+</ul></td>
     </tr>
     <tr>
       <th>C1</th>
-      <td><p>pre-treatment mean epg (or vector of individual epg) of the control group.</p></td>
+      <td><p>pre-treatment mean epg (or vector of individual epg) of the control group.<br />
+<br />
+For `method = "MacIntosh2"`, a data.frame containing individual epg values of the control group
+before treatment, with one or more value per individual. The data.frame must be in long format
+(one row per epg value) and include columns:</p><ul>
+<li><p>"id": character or factor indicating which individual the epg value is from.</p></li>
+<li><p>"epg": numeric, the epg value.</p></li>
+</ul></td>
     </tr>
     <tr>
       <th>C2</th>
-      <td><p>post-treatment mean epg (or vector of individual epg) of the control group.</p></td>
+      <td><p>post-treatment mean epg (or vector of individual epg) of the control group.<br />
+<br />
+For `method = "MacIntosh2"`, a data.frame containing individual epg values of the control group
+after treatment, with one or more value per individual. The data.frame must be in long format
+(one row per epg value) and include columns:</p><ul>
+<li><p>"id": character or factor indicating which individual the epg value is from.</p></li>
+<li><p>"epg": numeric, the epg value.</p></li>
+</ul></td>
     </tr>
     <tr>
       <th>method</th>
@@ -163,8 +207,10 @@ Calculate the FECR according to several methods described (cf. Cabaret &amp; Ber
 <li><p>"Cabaret1"the mean ratio of individual pre- and post-treatment epg of the treated group</p></li>
 <li><p>"Cabaret2"the mean ratio of pre- and post-treatment epg of the treated group, correcting
  for the individual epg in the control group.</p></li>
-<li><p>"MacIntosh"Similar to Cabaret2, but update: now run for all pairs of Ts and Cs, to not
+<li><p>"MacIntosh1"Similar to Cabaret2, but update: now run for all pairs of Ts and Cs, to not
  require Ts and Cs to have the same length.</p></li>
+<li><p>"MacIntosh2"Similar to MacIntosh1, but update: now compatible with multiple epg values
+ per individuals. Does not require even sample size across T1,T2,C1, or C2).</p></li>
 </ul></td>
     </tr>
     <tr>
@@ -214,16 +260,36 @@ Calculate the FECR according to several methods described (cf. Cabaret &amp; Ber
 </div><div class='output co'>#&gt; [1] 88.602
 #&gt; attr(,"CI")
 #&gt;     2.5%    97.5% 
-#&gt; 87.35018 89.75919 </div><div class='input'><span class='fu'>FECR</span><span class='op'>(</span><span class='va'>T1</span>,<span class='va'>T2</span>,<span class='va'>C1</span>,<span class='va'>C2</span>,method <span class='op'>=</span> <span class='st'>"MacIntosh"</span>,compute.CI <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in match.arg(method): 'arg' should be one of "Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2", "MacIntosh1", "MacIntosh2"</span></div><div class='input'>
+#&gt; 87.35018 89.75919 </div><div class='input'><span class='fu'>FECR</span><span class='op'>(</span><span class='va'>T1</span>,<span class='va'>T2</span>,<span class='va'>C1</span>,<span class='va'>C2</span>,method <span class='op'>=</span> <span class='st'>"MacIntosh1"</span>,compute.CI <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 88.61238
+#&gt; attr(,"CI")
+#&gt;     2.5%    97.5% 
+#&gt; 88.44445 88.76411 </div><div class='input'>
 <span class='va'>T1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>60</span>,<span class='fl'>100</span><span class='op'>)</span>;<span class='va'>T1.mean</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>T1</span><span class='op'>)</span>
 <span class='va'>T2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>60</span>,<span class='fl'>10</span><span class='op'>)</span>;<span class='va'>T2.mean</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>T2</span><span class='op'>)</span>
 <span class='va'>C1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>50</span>,<span class='fl'>100</span><span class='op'>)</span>;<span class='va'>C1.mean</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>C1</span><span class='op'>)</span>
 <span class='va'>C2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>50</span>,<span class='fl'>90</span><span class='op'>)</span>;<span class='va'>C2.mean</span><span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>C2</span><span class='op'>)</span>
 
-<span class='fu'>FECR</span><span class='op'>(</span><span class='va'>T1</span>,<span class='va'>T2</span>,<span class='va'>C1</span>,<span class='va'>C2</span>,method <span class='op'>=</span> <span class='st'>"MacIntosh"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in match.arg(method): 'arg' should be one of "Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2", "MacIntosh1", "MacIntosh2"</span></div><div class='input'><span class='fu'>FECR</span><span class='op'>(</span><span class='va'>T1</span>,<span class='va'>T2</span>,<span class='va'>C1</span>,<span class='va'>C2</span>,method <span class='op'>=</span> <span class='st'>"MacIntosh"</span>,compute.CI <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in match.arg(method): 'arg' should be one of "Kochapakdee", "Dash", "Coles", "Cabaret1", "Cabaret2", "MacIntosh1", "MacIntosh2"</span></div></pre>
+<span class='fu'>FECR</span><span class='op'>(</span><span class='va'>T1</span>,<span class='va'>T2</span>,<span class='va'>C1</span>,<span class='va'>C2</span>,method <span class='op'>=</span> <span class='st'>"MacIntosh1"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 87.46709</div><div class='input'><span class='fu'>FECR</span><span class='op'>(</span><span class='va'>T1</span>,<span class='va'>T2</span>,<span class='va'>C1</span>,<span class='va'>C2</span>,method <span class='op'>=</span> <span class='st'>"MacIntosh1"</span>,compute.CI <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 87.46709
+#&gt; attr(,"CI")
+#&gt;     2.5%    97.5% 
+#&gt; 87.28565 87.64213 </div><div class='input'>
+<span class='va'>T1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='va'>letters</span><span class='op'>[</span><span class='fl'>9</span><span class='op'>:</span><span class='fl'>18</span><span class='op'>]</span>,each <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>,
+                 epg <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/do.call.html'>do.call</a></span><span class='op'>(</span><span class='va'>c</span>,<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>,\<span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>65</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>T2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='va'>letters</span><span class='op'>[</span><span class='fl'>9</span><span class='op'>:</span><span class='fl'>18</span><span class='op'>]</span>,each <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span>,
+                 epg <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/do.call.html'>do.call</a></span><span class='op'>(</span><span class='va'>c</span>,<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>,\<span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>4</span>,<span class='fl'>15</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>C1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='va'>letters</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>8</span><span class='op'>]</span>,each <span class='op'>=</span> <span class='fl'>6</span><span class='op'>)</span>,
+                 epg <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/do.call.html'>do.call</a></span><span class='op'>(</span><span class='va'>c</span>,<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>8</span>,\<span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>6</span>,<span class='fl'>70</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>C2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>id <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='va'>letters</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>8</span><span class='op'>]</span>,each <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>,
+                 epg <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/do.call.html'>do.call</a></span><span class='op'>(</span><span class='va'>c</span>,<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>8</span>,\<span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/stats/Poisson.html'>rpois</a></span><span class='op'>(</span><span class='fl'>7</span>,<span class='fl'>65</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+                 
+<span class='fu'>FECR</span><span class='op'>(</span><span class='va'>T1</span>,<span class='va'>T2</span>,<span class='va'>C1</span>,<span class='va'>C2</span>,method <span class='op'>=</span> <span class='st'>"MacIntosh2"</span>,boot <span class='op'>=</span> <span class='fl'>100</span><span class='op'>)</span>              
+</div><div class='output co'>#&gt; [1] 75.75135
+#&gt; attr(,"CI")
+#&gt;     2.5%    97.5% 
+#&gt; 69.90758 80.42890 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
