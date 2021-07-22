@@ -4,3 +4,6 @@
 ^\.Rproj\.user$
 ^R/Main script\.R$
 ^\.Misc$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
