@@ -6,6 +6,7 @@ output:
     toc_depth: 3
     toc_float:
       collapsed: true
+    highlight: tango
 ---
 The motivation that led us to propose an improvement over the individual method proposed by the
 authors is that we identified the two pitfalls mentioned in the previous paragraph, i.e. the

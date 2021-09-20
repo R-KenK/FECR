@@ -17,3 +17,5 @@ Imports:
     magrittr,
     pbapply,
     stats
+URL: https://github.com/R-KenK/FECR/
+BugReports: https://github.com/R-KenK/FECR/issues
